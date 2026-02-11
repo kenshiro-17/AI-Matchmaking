@@ -374,6 +374,17 @@ h3 {
   overflow: clip;
 }
 
+.list-card strong {
+  display: block;
+  line-height: 1.2;
+}
+
+.list-card .list-meta {
+  margin-top: 0.34rem;
+  padding-right: 0.2rem;
+  line-height: 1.42;
+}
+
 .row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -586,6 +597,23 @@ code {
 
 .scenario-card h3 {
   margin: 0 0 0.34rem 0;
+}
+
+.scenario-card strong {
+  display: block;
+  line-height: 1.24;
+}
+
+.scenario-card .scenario-flow {
+  margin-top: 0.4rem;
+  padding: 0.18rem 0.02rem 0.1rem 0.02rem;
+  line-height: 1.4;
+}
+
+.scenario-card .scenario-explainer {
+  margin-top: 0.26rem;
+  line-height: 1.45;
+  color: #cfdaf0;
 }
 
 .audit-row {
