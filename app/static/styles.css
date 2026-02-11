@@ -15,6 +15,10 @@
   --radius-lg: 18px;
   --radius-md: 12px;
   --shadow-soft: 0 20px 45px rgba(0, 0, 0, 0.35);
+  --motion-fast: 160ms;
+  --motion-medium: 320ms;
+  --easing-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
@@ -87,6 +91,13 @@ h3 {
   margin-bottom: 1rem;
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(7px);
+  transition: border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
+}
+
+.topbar.topbar-scrolled {
+  border-color: rgba(214, 180, 119, 0.42);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.42);
+  background: linear-gradient(120deg, rgba(10, 14, 22, 0.95), rgba(16, 23, 36, 0.85));
 }
 
 .topbar strong {
@@ -94,6 +105,42 @@ h3 {
   letter-spacing: 0.1em;
   color: var(--brand-2);
   font-size: 0.86rem;
+}
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.58rem;
+  min-width: 0;
+  transition: transform var(--motion-fast) var(--easing-soft);
+}
+
+.brand-lockup:hover {
+  transform: translateY(-1px);
+}
+
+.brand-caption {
+  color: var(--brand-2);
+  font-size: 0.73rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pot-logo {
+  display: block;
+  width: auto;
+  height: 30px;
+}
+
+.brand-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+}
+
+.pot-logo-login {
+  height: 34px;
 }
 
 .navlinks {
@@ -109,7 +156,7 @@ h3 {
   border-radius: 999px;
   color: var(--text);
   font-size: 0.86rem;
-  transition: border-color 0.22s ease, color 0.22s ease, transform 0.22s ease;
+  transition: border-color var(--motion-fast) var(--easing-soft), color var(--motion-fast) var(--easing-soft), transform var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
 }
 
 .navlinks a:hover {
@@ -130,6 +177,18 @@ h3 {
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-soft);
+  isolation: isolate;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 10%, rgba(255, 255, 255, 0.06) 45%, transparent 75%);
+  transform: translateX(-120%);
+  animation: hero-sheen 4.8s var(--easing-out) infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .hero::after {
@@ -141,6 +200,11 @@ h3 {
   top: -250px;
   background: radial-gradient(circle, rgba(143, 198, 255, 0.22), transparent 70%);
   pointer-events: none;
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 .hero h1 {
@@ -180,6 +244,7 @@ h3 {
   border-radius: 12px;
   padding: 0.58rem 0.65rem;
   background: rgba(8, 12, 20, 0.55);
+  transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
 }
 
 .hero-chip strong {
@@ -222,6 +287,7 @@ h3 {
   padding: 1rem;
   backdrop-filter: blur(7px);
   box-shadow: var(--shadow-soft);
+  transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft);
 }
 
 .panel-elevated {
@@ -281,6 +347,7 @@ h3 {
   margin-bottom: 0.55rem;
   padding: 0.68rem 0.78rem;
   background: rgba(9, 13, 21, 0.55);
+  transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
 }
 
 .row {
@@ -318,12 +385,31 @@ h3 {
   font-weight: 600;
   text-decoration: none;
   display: inline-block;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft), filter var(--motion-fast) var(--easing-soft);
+}
+
+.btn::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: -160%;
+  width: 42%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  transform: skewX(-22deg);
+  transition: left 460ms var(--easing-soft);
 }
 
 .btn:hover {
   transform: translateY(-1px);
   border-color: rgba(214, 180, 119, 0.55);
+  filter: brightness(1.03);
+}
+
+.btn:hover::after {
+  left: 135%;
 }
 
 .btn-primary {
@@ -433,6 +519,7 @@ code {
   padding: 0.86rem;
   background: rgba(8, 12, 19, 0.62);
   margin-bottom: 0.75rem;
+  transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft);
 }
 
 .match-card h3 {
@@ -455,6 +542,7 @@ code {
   border-radius: 12px;
   padding: 0.75rem 0.85rem;
   margin-bottom: 0.58rem;
+  transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft);
 }
 
 .scenario-card h3 {
@@ -467,6 +555,7 @@ code {
   padding: 0.75rem 0.78rem;
   margin-bottom: 0.55rem;
   background: rgba(9, 13, 21, 0.58);
+  transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft);
 }
 
 .program-grid {
@@ -480,6 +569,7 @@ code {
   border-radius: 12px;
   padding: 0.72rem 0.78rem;
   background: rgba(8, 12, 20, 0.6);
+  transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
 }
 
 .program-card h3 {
@@ -497,6 +587,7 @@ code {
   border-radius: 12px;
   padding: 0.7rem 0.75rem;
   background: linear-gradient(150deg, rgba(27, 21, 12, 0.42), rgba(12, 17, 29, 0.7));
+  transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft);
 }
 
 .quality-item strong {
@@ -512,28 +603,89 @@ code {
   margin-top: 0.5rem;
 }
 
-.panel,
-.hero,
-.kpi {
-  animation: reveal 0.45s ease both;
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(12px) scale(0.995);
+  transition:
+    opacity var(--motion-medium) var(--easing-out),
+    transform var(--motion-medium) var(--easing-out);
+  transition-delay: calc(var(--reveal-index, 0) * 20ms);
 }
 
-@keyframes reveal {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+.js [data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.list-card,
+.match-card,
+.scenario-card,
+.audit-row,
+.program-card,
+.quality-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 110px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .panel:hover {
+    transform: translateY(-2px);
+    border-color: rgba(214, 180, 119, 0.34);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.42);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .hero-chip:hover {
+    transform: translateY(-2px);
+    border-color: rgba(214, 180, 119, 0.5);
+    background: rgba(12, 16, 26, 0.72);
+  }
+
+  .list-card:hover,
+  .match-card:hover,
+  .scenario-card:hover,
+  .audit-row:hover,
+  .program-card:hover,
+  .quality-item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(214, 180, 119, 0.38);
+  }
+}
+
+@keyframes hero-sheen {
+  0%,
+  38% {
+    transform: translateX(-130%);
+  }
+  58% {
+    transform: translateX(118%);
+  }
+  100% {
+    transform: translateX(118%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero::before {
+    animation: none;
+  }
+
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
   .panel,
   .hero,
   .kpi,
-  .btn {
+  .btn,
+  .list-card,
+  .match-card,
+  .scenario-card,
+  .audit-row,
+  .program-card,
+  .quality-item,
+  .hero-chip {
     animation: none;
     transition: none;
   }
@@ -558,5 +710,17 @@ code {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.55rem;
+  }
+
+  .pot-logo {
+    height: 26px;
+  }
+
+  .pot-logo-login {
+    height: 30px;
+  }
+
+  .brand-caption {
+    font-size: 0.68rem;
   }
 }

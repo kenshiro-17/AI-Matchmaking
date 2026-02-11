@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.database import Base, SessionLocal, engine, get_db
@@ -51,6 +52,7 @@ from app.services.security import (
 
 app = FastAPI(title="Proof of Talk Matchmaking Prototype", version="0.5.0")
 Base.metadata.create_all(bind=engine)
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")

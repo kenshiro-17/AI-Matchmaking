@@ -9,7 +9,14 @@
   <body>
     <main class="shell">
       <nav class="topbar">
-        <strong>Attendee Workspace</strong>
+        <a href="/" class="brand-lockup" aria-label="Proof of Talk">
+          <img
+            src="https://cdn.prod.website-files.com/645edd8f8709e3387ae97c25/68b141b4b7cceb20c35bde08_front_logo.svg"
+            alt="Proof of Talk"
+            class="pot-logo"
+          />
+          <span class="brand-caption">Attendee Workspace</span>
+        </a>
         <div class="navlinks">
           {% if user.role == 'organizer' %}<a href="/organizer">Organizer Workspace</a>{% endif %}
           <a href="/">Overview</a>
@@ -142,5 +149,6 @@
         </article>
       </section>
     </main>
+    <script src="/static/ui.js" defer></script>
   </body>
 </html>
