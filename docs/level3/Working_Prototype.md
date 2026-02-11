@@ -25,6 +25,14 @@ This working prototype is configured with a strict quality-over-quantity policy:
   - paginated organizer/overview attendee lists,
   - aggregated feedback scoring query,
   - batched candidate hydration for match responses.
+- UI/UX hardening is implemented:
+  - Proof of Talk logo served locally under `/static/brand/proof-of-talk-logo.svg`,
+  - favicon and `/favicon.ico` route support,
+  - premium motion with reduced-motion safe fallback,
+  - reveal fallback logic to prevent hidden sections after resize/orientation changes,
+  - spacing fixes for Curated Directory and Strategic Scenarios text cards.
+- Cross-device verification executed with Playwright across:
+  - iPhone, Android, tablet, laptop, desktop, and big monitor viewports.
 
 ## Endpoints
 - `GET /v1/matches/{attendee_id}`
@@ -36,6 +44,7 @@ This working prototype is configured with a strict quality-over-quantity policy:
 - `GET /v1/scenarios`
 - `GET /v1/scenarios?attendee_id=<id>`
 - `GET /health`
+- `GET /favicon.ico`
 
 ## UI routes
 - `GET /login`
@@ -51,3 +60,6 @@ This working prototype is configured with a strict quality-over-quantity policy:
 
 Security reference document:
 - `/docs/security/Security_Hardening_Plan_and_Implementation.md`
+
+Current deployed URL:
+- `https://ai-matchmaking-pot.vercel.app`

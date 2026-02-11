@@ -97,8 +97,8 @@
           <ul class="list">
             {% for attendee in attendees %}
             <li class="list-card row">
-              <div>
-                <a href="/attendees/{{ attendee.id }}"><strong>{{ attendee.name }}</strong></a>
+              <div class="directory-item-body">
+                <a href="/attendees/{{ attendee.id }}"><strong class="directory-item-title">{{ attendee.name }}</strong></a>
                 <div class="small list-meta">{{ attendee.role }} · {{ attendee.company }} · Goal: {{ attendee.primary_goal }}</div>
               </div>
               <span class="badge">{{ attendee.primary_goal }}</span>
@@ -122,7 +122,10 @@
           <ul class="list">
             {% for scenario in scenarios %}
             <li class="scenario-card">
-              <strong>{{ scenario.title }} <span class="badge">{{ scenario.type }}</span></strong>
+              <div class="scenario-title-row">
+                <strong class="scenario-title">{{ scenario.title }}</strong>
+                <span class="badge">{{ scenario.type }}</span>
+              </div>
               <div class="small scenario-flow">{{ scenario.participants | join(" → ") }}</div>
               <div class="small scenario-explainer">{{ scenario.explanation }}</div>
             </li>

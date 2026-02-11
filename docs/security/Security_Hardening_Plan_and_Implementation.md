@@ -167,7 +167,7 @@ Files:
 - `LOCKOUT_SECONDS`
 
 ## 6) Validation Performed
-- Existing tests still pass (`5 passed`).
+- Existing tests still pass (`6 passed`).
 - Verified:
   - unauthenticated API access is denied,
   - role restrictions are enforced,

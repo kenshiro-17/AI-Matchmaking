@@ -197,6 +197,11 @@ This strengthens Proof of Talk’s perceived and measurable event value.
 - Working web app with attendee workflow + organizer workspace.
 - Organizer attendee input form and CSV export for match recommendations.
 - External data retrieval from one source (company website enrichment endpoint).
+- Production-grade presentation layer improvements:
+  - Proof of Talk branding integration (local static logo),
+  - browser favicon support,
+  - premium UI interactions with lightweight motion,
+  - responsive spacing stabilization across mobile/tablet/laptop/desktop/large monitor viewports.
 
 ### 90-day roadmap
 1. Days 1-30: ingestion, profile builder, hard constraints, quality-gated recommendations.
@@ -209,6 +214,8 @@ This strengthens Proof of Talk’s perceived and measurable event value.
 - SQLite for MVP (Postgres in production)
 - Rule-based scoring + semantic text interpretation + feedback priors
 - HTTP enrichment adapter for external source retrieval (company website metadata/content summary)
+- Security and runtime hardening:
+  - RBAC, CSRF, lockout/rate limiting, audit logs, SSRF controls, secure headers.
 
 ## Why this differs from Grip / Brella / Swapcard
 - Strict quality gating, not high-volume networking.
@@ -220,7 +227,7 @@ This strengthens Proof of Talk’s perceived and measurable event value.
 - System Design: practical architecture, consent model, organizer controls.
 - AI & Matching Logic: constraints + scoring + explainability + scenarios.
 - Communication: concise, executive-readable, concrete examples.
-- Ambition & Execution: Level 1 + Level 2 artifacts + runnable prototype.
+- Ambition & Execution: Level 1 + Level 2 artifacts + runnable prototype with authenticated organizer tooling, CSV export, external source enrichment, and cross-device UI reliability improvements.
 
 ## “Things to Think About” — Direct Answers
 1. Cold start: require mini-intent form, rank conservatively, use organizer fallback.
@@ -241,6 +248,8 @@ This strengthens Proof of Talk’s perceived and measurable event value.
 - `GET /v1/matches/{attendee_id}`
 - `POST /v1/enrich/company`
 - `GET /organizer/export/matches.csv`
+- `GET /v1/scenarios`
+- `GET /favicon.ico` (brand icon support)
 
 ## Submission Email Paragraph
 I am submitting my case study for an AI-powered matchmaking tool for Proof of Talk. The proposal is quality-first and implementation-focused: consented profile enrichment, explainable matching, strict confidence gating, and feedback-driven adaptation. I also included a Level-2 wireframe and working proof of concept with sample outputs, including non-obvious pair and triad strategic opportunities.

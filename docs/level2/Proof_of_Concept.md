@@ -22,10 +22,18 @@
 - External source retrieval works through company website enrichment endpoint.
   - Note: endpoint requires outbound network/DNS in runtime environment.
 - Enterprise hardening controls (RBAC, CSRF, security headers, SSRF guard, audit logs) are implemented.
+- UI is production-polished with:
+  - Proof of Talk logo and favicon,
+  - premium but lightweight animations,
+  - responsive spacing fixes for card-heavy sections,
+  - cross-device stability under window resize/orientation changes.
 
 ## Run
 ```bash
-python -m pip install --user -r requirements.txt
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 python scripts/seed_data.py
 python scripts/generate_level2_artifacts.py
 python -m uvicorn app.main:app --reload
@@ -37,6 +45,10 @@ Open:
 - Matches API: `http://127.0.0.1:8000/v1/matches/1`
 - Scenarios API: `http://127.0.0.1:8000/v1/scenarios`
 - Enrichment API example: `POST /v1/enrich/company?attendee_id=1&source_url=https://example.com`
+- Favicon route: `http://127.0.0.1:8000/favicon.ico`
+
+Live deployment:
+- `https://ai-matchmaking-pot.vercel.app`
 
 ## 5-minute demo flow
 1. Open attendee view and show quality-gated recommendations.
@@ -44,3 +56,4 @@ Open:
 3. Show organizer strategic scenarios (pair and triad).
 4. Submit feedback and refresh ranking.
 5. Show organizer metrics.
+6. Resize browser and show stable layout/spacing behavior in Curated Directory and Strategic Scenarios sections.
