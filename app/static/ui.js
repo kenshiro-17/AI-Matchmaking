@@ -45,6 +45,14 @@
 
   revealTargets.forEach((el) => observer.observe(el));
 
+  // Safety fallback: never leave content hidden if observer misses events
+  // during rapid resize/orientation changes on some browsers/devices.
+  window.setTimeout(() => {
+    for (const el of revealTargets) {
+      el.classList.add("is-visible");
+    }
+  }, 450);
+
   const topbar = document.querySelector(".topbar");
   const syncLayoutState = () => {
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
