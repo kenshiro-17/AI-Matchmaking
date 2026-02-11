@@ -146,15 +146,15 @@
           <p class="small note-subtle">API alternative: <code>POST /v1/enrich/company?attendee_id=&lt;id&gt;&amp;source_url=&lt;url&gt;</code></p>
 
           <h3>Attendee Directory</h3>
-          <ul class="list">
+          <ul class="list organizer-directory-list">
             {% for attendee in attendees %}
-            <li class="list-card">
+            <li class="list-card organizer-directory-item">
               <div class="row">
                 <a href="/attendees/{{ attendee.id }}"><strong>#{{ attendee.id }} {{ attendee.name }}</strong></a>
                 <span class="badge">{{ attendee.primary_goal }}</span>
               </div>
-              <div class="small">{{ attendee.role }} · {{ attendee.company }}</div>
-              <div class="actions">
+              <div class="small list-meta">{{ attendee.role }} · {{ attendee.company }}</div>
+              <div class="actions directory-actions">
                 <a class="btn" href="/organizer?confirm_delete={{ attendee.id }}&page={{ page }}&page_size={{ page_size }}">Delete</a>
               </div>
             </li>
