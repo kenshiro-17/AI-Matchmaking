@@ -151,10 +151,3 @@ Use managed Postgres in production. Do not rely on local disk for persistent dat
 - Level 2 wireframe: `docs/level2/wireframe-clickable.html`
 - Sample input/output: `docs/level2/sample_input_12_attendees.json`, `docs/level2/sample_output_matches.json`, `docs/level2/sample_output_scenarios.json`
 
-## Local-Only Files (Not for GitHub)
-
-The following are intentionally gitignored:
-- `docs/Project_Master_Guide.md`
-- `docs/plans/`
-- `docs/local/` (if used)
-
