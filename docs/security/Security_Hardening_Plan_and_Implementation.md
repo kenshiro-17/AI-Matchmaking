@@ -30,6 +30,7 @@ This hardening plan was based on primary guidance from OWASP, NIST, and framewor
 - Enforce server-side RBAC checks for every sensitive route/API.
 - Avoid client-side-only authorization.
 - Gate destructive organizer actions (attendee deletion) behind explicit typed confirmation.
+- Gate bulk attendee imports behind organizer auth + CSRF + rate limiting with strict row validation.
 
 7. Auditability
 - Log security-relevant actions (login, denied actions, enrichment attempts, exports, admin operations).
@@ -147,6 +148,7 @@ Files:
 ### Audit logging
 - Added `AuditLog` table.
 - Logs login outcomes, feedback writes, intro actions, attendee creation/deletion, enrichment attempts, and exports.
+- Logs login outcomes, feedback writes, intro actions, attendee creation/deletion, bulk imports, enrichment attempts, and exports.
 - Added organizer audit view.
 
 Files:
@@ -170,7 +172,7 @@ Files:
 - `LOCKOUT_SECONDS`
 
 ## 6) Validation Performed
-- Existing tests still pass (`9 passed`).
+- Existing tests still pass (`11 passed`).
 - Verified:
   - unauthenticated API access is denied,
   - role restrictions are enforced,
@@ -179,6 +181,7 @@ Files:
   - security headers are present,
   - audit page is accessible to organizer role,
   - attendee login uses per-attendee passcode pattern (`attendee123-<id>`),
+  - organizer bulk import enforces row-level validation and partial-failure reporting,
   - feedback tampering across attendee match scopes is blocked.
 
 ## 7) Residual Risk and Next Actions

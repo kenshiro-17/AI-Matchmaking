@@ -195,7 +195,7 @@ This strengthens Proof of Talk’s perceived and measurable event value.
 - Working POC with 12 fictional attendees.
 - Generated sample input/output, including strategic scenarios.
 - Working web app with attendee workflow + organizer workspace.
-- Organizer attendee input form and CSV export for match recommendations.
+- Organizer attendee input form, bulk CSV/JSON import, and CSV export for match recommendations.
 - Organizer attendee deletion flow with explicit typed-name confirmation.
 - External data retrieval from one source (company website enrichment endpoint).
 - Explicit LinkedIn opt-in enrichment flow (checkbox + profile URL; no hidden scraping).
@@ -251,6 +251,8 @@ This strengthens Proof of Talk’s perceived and measurable event value.
 - `POST /v1/enrich/company`
 - `POST /v1/enrich/linkedin`
 - `GET /organizer/export/matches.csv`
+- `POST /organizer/attendees/import`
+- `GET /organizer/attendees/template.csv`
 - `GET /v1/scenarios`
 - `GET /favicon.ico` (brand icon support)
 

@@ -548,6 +548,13 @@ textarea:focus {
   border-radius: 10px;
 }
 
+.divider {
+  border: 0;
+  height: 1px;
+  margin: 1rem 0 0.9rem;
+  background: linear-gradient(90deg, transparent, rgba(188, 201, 224, 0.22), transparent);
+}
+
 code {
   background: rgba(8, 11, 18, 0.9);
   border: 1px solid rgba(188, 201, 224, 0.22);

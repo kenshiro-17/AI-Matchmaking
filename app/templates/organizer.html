@@ -110,6 +110,20 @@
             </div>
           </form>
           <p class="small note-subtle">If no custom credentials are set, the app creates <code>attendee-&lt;id&gt;@pot.local</code> with passcode <code>attendee123-&lt;id&gt;</code>. LinkedIn lookup is run only when opt-in is enabled.</p>
+          <hr class="divider" />
+          <h3>Bulk Import (CSV or JSON)</h3>
+          <form action="/organizer/attendees/import" method="post" enctype="multipart/form-data" class="form-grid">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <div class="full-row">
+              <label>Upload File</label>
+              <input name="upload_file" type="file" accept=".csv,.json,text/csv,application/json" required />
+            </div>
+            <div class="actions full-row">
+              <button class="btn btn-secondary" type="submit">Run Bulk Import</button>
+              <a class="btn" href="/organizer/attendees/template.csv">Download CSV Template</a>
+            </div>
+          </form>
+          <p class="small note-subtle">Use this for curated batch onboarding (up to 3000 rows). Required fields: <code>name</code>, <code>role</code>, <code>company</code>, <code>primary_goal</code>.</p>
         </article>
 
         <article class="panel panel-elevated">

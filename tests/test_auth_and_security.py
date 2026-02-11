@@ -1,3 +1,5 @@
+from urllib.parse import unquote_plus
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -233,5 +235,70 @@ def test_organizer_delete_attendee_requires_confirmation_and_cleans_related_rows
             .first()
             is None
         )
+    finally:
+        db.close()
+
+
+def test_bulk_import_csv_creates_multiple_attendees():
+    seed()
+    client = TestClient(app)
+    _login_organizer(client)
+
+    csv_payload = (
+        "name,role,company,primary_goal,availability,language,secondary_goals,seek_text,offer_text,focus_text\n"
+        "Bulk User 1,Founder & CEO,Alpha Labs,Investment,day1_pm,English,Partnerships,investors,distribution,tokenization infra\n"
+        "Bulk User 2,Managing Partner,Beta Capital,Partnerships,day2_am,English,Investment,founders,capital,institutional defi\n"
+    )
+    csrf = client.cookies.get("csrf_token")
+    response = client.post(
+        "/organizer/attendees/import",
+        data={"csrf_token": csrf},
+        files={"upload_file": ("attendees.csv", csv_payload, "text/csv")},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    decoded_location = unquote_plus(response.headers["location"])
+    assert "created=2" in decoded_location
+    assert "failed=0" in decoded_location
+
+    db = SessionLocal()
+    try:
+        one = db.query(Attendee).filter(Attendee.name == "Bulk User 1").first()
+        two = db.query(Attendee).filter(Attendee.name == "Bulk User 2").first()
+        assert one is not None
+        assert two is not None
+        assert db.query(AppUser).filter(AppUser.attendee_id == one.id).first() is not None
+        assert db.query(AppUser).filter(AppUser.attendee_id == two.id).first() is not None
+    finally:
+        db.close()
+
+
+def test_bulk_import_partial_failure_reports_row_errors():
+    seed()
+    client = TestClient(app)
+    _login_organizer(client)
+
+    csv_payload = (
+        "name,role,company,primary_goal\n"
+        "Bulk Good,Founder & CEO,GoodCo,Investment\n"
+        ",Managing Partner,BadCo,Investment\n"
+    )
+    csrf = client.cookies.get("csrf_token")
+    response = client.post(
+        "/organizer/attendees/import",
+        data={"csrf_token": csrf},
+        files={"upload_file": ("attendees.csv", csv_payload, "text/csv")},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    decoded_location = unquote_plus(response.headers["location"])
+    assert "created=1" in decoded_location
+    assert "failed=1" in decoded_location
+    assert "row 3: name is required" in decoded_location
+
+    db = SessionLocal()
+    try:
+        assert db.query(Attendee).filter(Attendee.name == "Bulk Good").first() is not None
+        assert db.query(Attendee).filter(Attendee.company == "BadCo").first() is None
     finally:
         db.close()

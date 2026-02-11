@@ -18,6 +18,7 @@ This working prototype is configured with a strict quality-over-quantity policy:
 - Generated sample input/output artifacts for 12 fictional attendees.
 - Double-opt-in intro workflow is active.
 - Organizer can input attendees and export CSV recommendations.
+- Organizer can bulk import attendee lists via CSV/JSON with row-level validation and partial-success reporting.
 - Organizer can delete attendees with typed-name confirmation; related attendee-scoped records are removed in one action.
 - External source enrichment is available via company website endpoint.
 - LinkedIn enrichment is available with explicit attendee opt-in (checkbox + profile URL).
@@ -54,6 +55,8 @@ This working prototype is configured with a strict quality-over-quantity policy:
 - `GET /` (role-aware landing)
 - `GET /attendees/{id}` (attendee workspace, role-scoped)
 - `GET /organizer` (organizer workspace)
+- `GET /organizer/attendees/template.csv` (import template)
+- `POST /organizer/attendees/import` (organizer-only bulk import)
 - `POST /organizer/attendees/{id}/delete` (organizer-only, CSRF + confirmation gated)
 
 ## Demo Credentials

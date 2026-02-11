@@ -1,16 +1,18 @@
 import csv
 import io
+import json
 import os
 import re
 import time
 from pathlib import Path
 from urllib.parse import quote_plus
 
-from fastapi import Depends, FastAPI, Form, HTTPException, Request
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.middleware.gzip import GZipMiddleware
@@ -75,6 +77,8 @@ SEED_ON_STARTUP = os.getenv(
 ).lower() == "true"
 HOME_PAGE_SIZE = int(os.getenv("HOME_PAGE_SIZE", "80"))
 ORGANIZER_PAGE_SIZE = int(os.getenv("ORGANIZER_PAGE_SIZE", "100"))
+IMPORT_MAX_FILE_BYTES = int(os.getenv("IMPORT_MAX_FILE_BYTES", str(4 * 1024 * 1024)))
+IMPORT_MAX_ROWS = int(os.getenv("IMPORT_MAX_ROWS", "3000"))
 
 if ALLOWED_HOSTS != ["*"]:
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
@@ -251,24 +255,32 @@ def ensure_default_organizer_user(db: Session):
     return db.query(AppUser).filter(AppUser.email == ORGANIZER_EMAIL).first()
 
 
-def ensure_attendee_user(db: Session, attendee: Attendee, email: str | None = None, raw_password: str | None = None):
+def ensure_attendee_user(
+    db: Session,
+    attendee: Attendee,
+    email: str | None = None,
+    raw_password: str | None = None,
+    commit: bool = True,
+):
     existing = db.query(AppUser).filter(AppUser.attendee_id == attendee.id, AppUser.role == "attendee").first()
     if existing:
         return existing
     user_email = email or f"attendee-{attendee.id}@pot.local"
     password = raw_password or f"{ATTENDEE_BOOTSTRAP_PASSWORD}-{attendee.id}"
-    db.add(
-        AppUser(
-            email=user_email,
-            role="attendee",
-            attendee_id=attendee.id,
-            password_hash=hash_password(password),
-            failed_attempts=0,
-            locked_until=0,
-        )
+    created = AppUser(
+        email=user_email,
+        role="attendee",
+        attendee_id=attendee.id,
+        password_hash=hash_password(password),
+        failed_attempts=0,
+        locked_until=0,
     )
-    db.commit()
-    return db.query(AppUser).filter(AppUser.attendee_id == attendee.id, AppUser.role == "attendee").first()
+    db.add(created)
+    if commit:
+        db.commit()
+        return db.query(AppUser).filter(AppUser.attendee_id == attendee.id, AppUser.role == "attendee").first()
+    db.flush()
+    return created
 
 
 def validate_text(value: str, field: str, max_len: int) -> str:
@@ -320,6 +332,98 @@ def parse_page_size(value: str | None, default: int, min_size: int = 10, max_siz
     except (TypeError, ValueError):
         return default
     return min(max(parsed, min_size), max_size)
+
+
+def required_text(value: str, field: str, max_len: int) -> str:
+    cleaned = validate_text(value, field, max_len)
+    if not cleaned:
+        raise ValueError(f"{field} is required")
+    return cleaned
+
+
+def parse_seed_confidence(raw_value: str) -> float:
+    value = (raw_value or "").strip()
+    if not value:
+        return 0.7
+    try:
+        parsed = float(value)
+    except ValueError as exc:
+        raise ValueError("seed_confidence must be a number between 0 and 1") from exc
+    if parsed < 0 or parsed > 1:
+        raise ValueError("seed_confidence must be between 0 and 1")
+    return parsed
+
+
+def load_bulk_import_rows(filename: str, raw_content: bytes) -> list[dict]:
+    if len(raw_content) > IMPORT_MAX_FILE_BYTES:
+        raise ValueError(f"import file exceeds {IMPORT_MAX_FILE_BYTES} bytes")
+    try:
+        content = raw_content.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError("file must be utf-8 encoded") from exc
+
+    ext = Path(filename or "").suffix.lower()
+    rows: list[dict] = []
+    if ext == ".json":
+        payload = json.loads(content)
+        if isinstance(payload, dict):
+            rows = payload.get("attendees", [])
+        elif isinstance(payload, list):
+            rows = payload
+        else:
+            raise ValueError("json payload must be a list or an object with attendees[]")
+        if not isinstance(rows, list):
+            raise ValueError("json attendees must be a list")
+    else:
+        reader = csv.DictReader(io.StringIO(content))
+        if not reader.fieldnames:
+            raise ValueError("csv header is required")
+        rows = list(reader)
+
+    if not rows:
+        raise ValueError("import payload contains no attendee rows")
+    if len(rows) > IMPORT_MAX_ROWS:
+        raise ValueError(f"import exceeds max rows ({IMPORT_MAX_ROWS})")
+    return rows
+
+
+def parse_import_row(row_data: dict) -> dict:
+    row = {str(k).strip().lower(): "" if v is None else str(v).strip() for k, v in row_data.items()}
+    linkedin_opt_in = parse_opt_in(row.get("linkedin_opt_in", ""))
+    linkedin_url = validate_text(row.get("linkedin_url", ""), "linkedin_url", 280)
+    if linkedin_opt_in and not linkedin_url:
+        raise ValueError("linkedin_url is required when linkedin_opt_in is enabled")
+    if not linkedin_opt_in:
+        linkedin_url = ""
+
+    login_email = validate_email_or_blank(row.get("login_email", ""), "login_email")
+    temp_password = validate_password_or_blank(row.get("temp_password", ""), "temp_password")
+    if (login_email and not temp_password) or (temp_password and not login_email):
+        raise ValueError("login_email and temp_password must be set together")
+    if APP_ENV in {"prod", "production"} and not temp_password:
+        raise ValueError("temp_password is required in production")
+
+    seed_confidence = parse_seed_confidence(row.get("seed_confidence", ""))
+
+    return {
+        "name": required_text(row.get("name", ""), "name", 120),
+        "role": required_text(row.get("role", ""), "role", 120),
+        "company": required_text(row.get("company", ""), "company", 120),
+        "primary_goal": required_text(row.get("primary_goal", ""), "primary_goal", 120),
+        "availability": validate_text(row.get("availability", ""), "availability", 240),
+        "language": validate_text(row.get("language", "") or "English", "language", 32) or "English",
+        "timezone": validate_text(row.get("timezone", "") or "Europe/Paris", "timezone", 64) or "Europe/Paris",
+        "secondary_goals": validate_text(row.get("secondary_goals", ""), "secondary_goals", 240),
+        "exclusions": validate_text(row.get("exclusions", ""), "exclusions", 240),
+        "focus_text": validate_text(row.get("focus_text", ""), "focus_text", 800),
+        "seek_text": validate_text(row.get("seek_text", ""), "seek_text", 800),
+        "offer_text": validate_text(row.get("offer_text", ""), "offer_text", 800),
+        "linkedin_opt_in": linkedin_opt_in,
+        "linkedin_url": linkedin_url,
+        "seed_confidence": seed_confidence,
+        "login_email": login_email,
+        "temp_password": temp_password,
+    }
 
 
 def delete_attendee_relations(db: Session, attendee_id: int) -> dict[str, int]:
@@ -820,6 +924,155 @@ def create_attendee_form(
         url=f"/organizer?message={quote_plus(message)}",
         status_code=303,
     )
+
+
+@app.get("/organizer/attendees/template.csv")
+def attendee_import_template(request: Request, db: Session = Depends(get_db)):
+    auth = require_organizer(request)
+    if auth:
+        return auth
+    user = current_user(request)
+    if not has_permission(user, "manage_attendees"):
+        write_audit_log(db, user, "download_attendee_template", "attendee_import", "", "denied", {})
+        raise HTTPException(status_code=403, detail="Forbidden")
+    header = [
+        "name",
+        "role",
+        "company",
+        "primary_goal",
+        "availability",
+        "language",
+        "timezone",
+        "secondary_goals",
+        "exclusions",
+        "seek_text",
+        "offer_text",
+        "focus_text",
+        "linkedin_opt_in",
+        "linkedin_url",
+        "seed_confidence",
+        "login_email",
+        "temp_password",
+    ]
+    sample = [
+        "Elena Rossi",
+        "Head of Digital Assets",
+        "European Bank",
+        "Partnerships",
+        "day1_pm,day2_am",
+        "English",
+        "Europe/Paris",
+        "Investment",
+        "",
+        "tokenization infrastructure partner",
+        "institutional distribution",
+        "compliant digital asset deployment",
+        "true",
+        "https://www.linkedin.com/in/elena-rossi",
+        "0.85",
+        "elena.rossi@bank.com",
+        "TempPass123!",
+    ]
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(header)
+    writer.writerow(sample)
+    write_audit_log(db, user, "download_attendee_template", "attendee_import", "", "success", {})
+    return StreamingResponse(
+        io.BytesIO(buffer.getvalue().encode("utf-8")),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=attendees_import_template.csv"},
+    )
+
+
+@app.post("/organizer/attendees/import")
+async def bulk_import_attendees_form(
+    request: Request,
+    csrf_token: str = Form(""),
+    upload_file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    auth = require_organizer(request)
+    if auth:
+        return auth
+    require_csrf_form(request, csrf_token)
+    check_rate_limit(request, "attendee_bulk_import_form", limit=5, period_seconds=60)
+    user = current_user(request)
+
+    filename = validate_text(upload_file.filename or "", "upload_file_name", 180)
+    if not filename:
+        raise HTTPException(status_code=400, detail="upload file is required")
+    if Path(filename).suffix.lower() not in {".csv", ".json"}:
+        raise HTTPException(status_code=400, detail="upload file must be .csv or .json")
+
+    raw = await upload_file.read(IMPORT_MAX_FILE_BYTES + 1)
+    try:
+        rows = load_bulk_import_rows(filename, raw)
+    except (ValueError, json.JSONDecodeError) as exc:
+        write_audit_log(
+            db,
+            user,
+            "bulk_import_attendees",
+            "attendee_import",
+            "",
+            "failed",
+            {"error": str(exc)[:180], "filename": filename},
+        )
+        msg = f"Bulk import failed: {str(exc)[:180]}"
+        return RedirectResponse(url=f"/organizer?message={quote_plus(msg)}", status_code=303)
+
+    created = 0
+    failed = 0
+    sample_errors: list[str] = []
+    for index, raw_row in enumerate(rows, start=1):
+        row_number = index + 1 if Path(filename).suffix.lower() == ".csv" else index
+        try:
+            parsed = parse_import_row(raw_row if isinstance(raw_row, dict) else {})
+            with db.begin_nested():
+                attendee = Attendee(
+                    name=parsed["name"],
+                    role=parsed["role"],
+                    company=parsed["company"],
+                    primary_goal=parsed["primary_goal"],
+                    availability=parsed["availability"],
+                    language=parsed["language"],
+                    timezone=parsed["timezone"],
+                    secondary_goals=parsed["secondary_goals"],
+                    exclusions=parsed["exclusions"],
+                    seek_text=parsed["seek_text"],
+                    offer_text=parsed["offer_text"],
+                    focus_text=parsed["focus_text"],
+                    linkedin_opt_in=parsed["linkedin_opt_in"],
+                    linkedin_url=parsed["linkedin_url"],
+                    seed_confidence=parsed["seed_confidence"],
+                )
+                db.add(attendee)
+                db.flush()
+                ensure_attendee_user(
+                    db,
+                    attendee,
+                    email=parsed["login_email"] or None,
+                    raw_password=parsed["temp_password"] or None,
+                    commit=False,
+                )
+            created += 1
+        except (ValueError, IntegrityError) as exc:
+            failed += 1
+            if len(sample_errors) < 5:
+                sample_errors.append(f"row {row_number}: {str(exc).replace(chr(10), ' ')[:140]}")
+        except HTTPException as exc:
+            failed += 1
+            if len(sample_errors) < 5:
+                detail = str(exc.detail) if hasattr(exc, "detail") else str(exc)
+                sample_errors.append(f"row {row_number}: {detail.replace(chr(10), ' ')[:140]}")
+
+    db.commit()
+    details = {"filename": filename, "created": created, "failed": failed, "total": len(rows), "errors": sample_errors}
+    write_audit_log(db, user, "bulk_import_attendees", "attendee_import", "", "success", details)
+    message = f"Bulk import complete: created={created}, failed={failed}, total={len(rows)}"
+    if sample_errors:
+        message += f" | sample errors: {'; '.join(sample_errors)}"
+    return RedirectResponse(url=f"/organizer?message={quote_plus(message)}", status_code=303)
 
 
 @app.post("/organizer/enrich")

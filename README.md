@@ -13,6 +13,7 @@ This system is built for high-stakes events where conversation quality matters m
 - Learns from feedback and outcomes
 - Surfaces strategic pair + triad opportunities
 - Provides organizer console (add/delete attendees, view metrics, export CSV)
+- Supports bulk attendee import (CSV/JSON, up to 3000 rows per file)
 - Supports explicit LinkedIn opt-in enrichment (checkbox + profile URL)
 - Includes role-based authentication and security controls
 
@@ -117,6 +118,8 @@ curl http://127.0.0.1:8000/health
 - `POST /v1/enrich/company`
 - `POST /v1/enrich/linkedin`
 - `GET /health`
+- `GET /organizer/attendees/template.csv` (bulk import template download)
+- `POST /organizer/attendees/import` (organizer bulk import via form/multipart)
 
 Notes:
 - API routes require authenticated session
@@ -132,6 +135,7 @@ Notes:
 - SSRF protection for enrichment source URLs
 - LinkedIn enrichment requires explicit attendee opt-in + profile URL
 - Organizer attendee deletion requires explicit typed-name confirmation
+- Bulk import validates every row and reports partial-failure row errors
 - Audit logging for sensitive actions
 
 ## Performance and Scale Notes
@@ -190,3 +194,9 @@ Detailed guide:
 - Level 2 POC: `docs/level2/Proof_of_Concept.md`
 - Level 2 wireframe: `docs/level2/wireframe-clickable.html`
 - Sample input/output: `docs/level2/sample_input_12_attendees.json`, `docs/level2/sample_output_matches.json`, `docs/level2/sample_output_scenarios.json`
+
+Regenerate submission PDFs after doc updates:
+
+```bash
+python scripts/generate_submission_pdfs.py
+```

@@ -1,0 +1,159 @@
+import re
+from pathlib import Path
+from xml.sax.saxutils import escape
+
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+
+DOC_MAP = [
+    (
+        Path("docs/Case_Study_3_Submission_Draft.md"),
+        Path("docs/submission_pdfs/Case_Study_3_Submission_Draft.pdf"),
+        "Case_Study_3_Submission_Draft",
+    ),
+    (
+        Path("docs/level2/Proof_of_Concept.md"),
+        Path("docs/submission_pdfs/Proof_of_Concept.pdf"),
+        "Proof_of_Concept",
+    ),
+    (
+        Path("docs/level3/Working_Prototype.md"),
+        Path("docs/submission_pdfs/Working_Prototype.pdf"),
+        "Working_Prototype",
+    ),
+    (
+        Path("docs/security/Security_Hardening_Plan_and_Implementation.md"),
+        Path("docs/submission_pdfs/Security_Hardening_Plan_and_Implementation.pdf"),
+        "Security_Hardening_Plan_and_Implementation",
+    ),
+]
+
+LINK_PATTERN = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+
+
+def _styles():
+    styles = getSampleStyleSheet()
+    styles.add(
+        ParagraphStyle(
+            name="H1X",
+            parent=styles["Heading1"],
+            fontSize=16,
+            leading=20,
+            spaceAfter=8,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="H2X",
+            parent=styles["Heading2"],
+            fontSize=12,
+            leading=16,
+            spaceBefore=8,
+            spaceAfter=4,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="BodyX",
+            parent=styles["BodyText"],
+            fontSize=10,
+            leading=14,
+            spaceAfter=3,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="BulletX",
+            parent=styles["BodyText"],
+            fontSize=10,
+            leading=14,
+            leftIndent=14,
+            bulletIndent=4,
+            spaceAfter=2,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="CodeX",
+            parent=styles["BodyText"],
+            fontName="Courier",
+            fontSize=9,
+            leading=12,
+            leftIndent=10,
+            spaceAfter=2,
+        )
+    )
+    return styles
+
+
+def _normalize_inline(text: str) -> str:
+    text = text.replace("`", "")
+    text = LINK_PATTERN.sub(lambda m: f"{m.group(1)} ({m.group(2)})", text)
+    return escape(text)
+
+
+def render_markdown_to_pdf(source: Path, target: Path, title: str):
+    styles = _styles()
+    story = []
+    in_code = False
+    text = source.read_text(encoding="utf-8")
+    for raw in text.splitlines():
+        line = raw.rstrip()
+        if line.strip().startswith("```"):
+            in_code = not in_code
+            continue
+        if in_code:
+            if line.strip():
+                story.append(Paragraph(escape(line), styles["CodeX"]))
+            else:
+                story.append(Spacer(1, 4))
+            continue
+
+        if not line.strip():
+            story.append(Spacer(1, 5))
+            continue
+        if line.startswith("# "):
+            story.append(Paragraph(_normalize_inline(line[2:].strip()), styles["H1X"]))
+            continue
+        if line.startswith("## "):
+            story.append(Paragraph(_normalize_inline(line[3:].strip()), styles["H2X"]))
+            continue
+        if line.startswith("### "):
+            story.append(Paragraph(_normalize_inline(line[4:].strip()), styles["H2X"]))
+            continue
+
+        stripped = line.strip()
+        if stripped.startswith("- "):
+            story.append(Paragraph(_normalize_inline(stripped[2:]), styles["BulletX"], bulletText="•"))
+            continue
+        if re.match(r"^\d+\.\s+", stripped):
+            numbered = re.sub(r"^\d+\.\s+", "", stripped)
+            story.append(Paragraph(_normalize_inline(numbered), styles["BulletX"], bulletText="•"))
+            continue
+        story.append(Paragraph(_normalize_inline(stripped), styles["BodyX"]))
+
+    target.parent.mkdir(parents=True, exist_ok=True)
+    doc = SimpleDocTemplate(
+        str(target),
+        pagesize=A4,
+        leftMargin=1.6 * cm,
+        rightMargin=1.6 * cm,
+        topMargin=1.5 * cm,
+        bottomMargin=1.5 * cm,
+        title=title,
+    )
+    doc.build(story)
+
+
+def main():
+    for source, target, title in DOC_MAP:
+        if not source.exists():
+            raise FileNotFoundError(f"Missing source markdown: {source}")
+        render_markdown_to_pdf(source, target, title)
+        print(f"Generated {target}")
+
+
+if __name__ == "__main__":
+    main()

@@ -18,6 +18,7 @@
 - Feedback changes future ranking.
 - Strategic pair/triad opportunities are surfaced.
 - Organizer can input new attendees from UI.
+- Organizer can bulk import attendee lists via CSV/JSON upload.
 - Organizer can delete attendees with explicit typed-name confirmation.
 - Organizer can export recommendations as CSV.
 - External source retrieval works through company website enrichment endpoint.
@@ -44,6 +45,7 @@ python -m uvicorn app.main:app --reload
 Open:
 - App: `http://127.0.0.1:8000`
 - Organizer workspace: `http://127.0.0.1:8000/organizer`
+- Bulk import template: `http://127.0.0.1:8000/organizer/attendees/template.csv`
 - Matches API: `http://127.0.0.1:8000/v1/matches/1`
 - Scenarios API: `http://127.0.0.1:8000/v1/scenarios`
 - Enrichment API example: `POST /v1/enrich/company?attendee_id=1&source_url=https://example.com`
@@ -59,5 +61,6 @@ Live deployment:
 3. Show organizer strategic scenarios (pair and triad).
 4. Submit feedback and refresh ranking.
 5. Show organizer metrics.
-6. Delete a test attendee from organizer workspace and verify confirmation guardrails.
-7. Resize browser and show stable layout/spacing behavior in Curated Directory and Strategic Scenarios sections.
+6. Upload a CSV/JSON batch in organizer workspace and verify created/failed summary.
+7. Delete a test attendee from organizer workspace and verify confirmation guardrails.
+8. Resize browser and show stable layout/spacing behavior in Curated Directory and Strategic Scenarios sections.
