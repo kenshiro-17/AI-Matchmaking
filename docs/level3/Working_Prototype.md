@@ -56,6 +56,12 @@ This working prototype is configured with a strict quality-over-quantity policy:
 - `GET /organizer` (organizer workspace)
 - `POST /organizer/attendees/{id}/delete` (organizer-only, CSRF + confirmation gated)
 
+## Demo Credentials
+- Organizer email: `organizer@pot.local`
+- Organizer password: `organizer123`
+- Attendee login ID example: `1`
+- Attendee passcode pattern: `attendee123-<attendee_id>` (example: `attendee123-1`)
+
 ## Why this improves quality
 - Prevents weak “just in case” recommendations.
 - Preserves attendee trust in curated intros.
@@ -69,4 +75,4 @@ Current deployed URL:
 - [https://ai-matchmaking-pot.vercel.app](https://ai-matchmaking-pot.vercel.app)
 
 Primary wireframe (Figma):
-- [Proof of Talk Pitch Board v5](https://www.figma.com/online-whiteboard/create-diagram/f832226c-9b28-4c38-be43-8b4ada8f4d64?utm_source=other&utm_content=edit_in_figjam&oai_id=&request_id=55701c3a-ed32-408d-90b0-bb827b8e79fd)
+- [Proof of Talk Pitch Board](https://www.figma.com/online-whiteboard/create-diagram/f832226c-9b28-4c38-be43-8b4ada8f4d64?utm_source=other&utm_content=edit_in_figjam&oai_id=&request_id=55701c3a-ed32-408d-90b0-bb827b8e79fd)
