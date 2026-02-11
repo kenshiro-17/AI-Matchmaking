@@ -371,7 +371,7 @@ h3 {
   padding: 0.82rem 0.9rem;
   background: rgba(9, 13, 21, 0.55);
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
-  overflow: clip;
+  overflow: visible;
 }
 
 .list-card strong {
@@ -592,7 +592,7 @@ code {
   padding: 0.95rem 1rem;
   margin-bottom: 0.58rem;
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft);
-  overflow: clip;
+  overflow: visible;
 }
 
 .scenario-card h3 {
@@ -641,6 +641,61 @@ code {
 
 .panel .list {
   margin-top: 0.28rem;
+}
+
+/* Section-specific spacing controls for overview cards */
+.attendee-list,
+.scenario-list {
+  display: grid;
+  gap: 0.78rem;
+}
+
+.attendee-list > li,
+.scenario-list > li {
+  border-bottom: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.attendee-list .list-card {
+  margin-bottom: 0;
+  padding: 1.05rem 1.12rem 1.08rem;
+}
+
+.attendee-list .directory-item-title {
+  margin-bottom: 0.1rem;
+  line-height: 1.24;
+}
+
+.attendee-list .list-meta {
+  margin-top: 0.46rem;
+  line-height: 1.52;
+  padding-right: 0.12rem;
+}
+
+.attendee-list .directory-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.scenario-list .scenario-card {
+  margin-bottom: 0;
+  padding: 1.08rem 1.16rem 1.12rem;
+}
+
+.scenario-list .scenario-title-row {
+  margin-bottom: 0.6rem;
+}
+
+.scenario-list .scenario-flow {
+  margin-top: 0.24rem;
+  line-height: 1.5;
+}
+
+.scenario-list .scenario-explainer {
+  margin-top: 0.56rem;
+  line-height: 1.54;
 }
 
 .audit-row {
