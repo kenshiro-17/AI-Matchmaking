@@ -73,6 +73,8 @@ h2,
 h3 {
   font-family: "Didot", "Bodoni MT", "Times New Roman", serif;
   letter-spacing: 0.02em;
+  line-height: 1.16;
+  overflow-wrap: anywhere;
 }
 
 .shell {
@@ -100,6 +102,7 @@ h3 {
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(7px);
   transition: border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
+  overflow: clip;
 }
 
 .topbar.topbar-scrolled {
@@ -133,6 +136,7 @@ h3 {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .pot-logo {
@@ -158,6 +162,11 @@ h3 {
   gap: 0.65rem;
   flex-wrap: wrap;
   min-width: 0;
+}
+
+.navlinks > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .navlinks a {
@@ -189,6 +198,7 @@ h3 {
   overflow: hidden;
   box-shadow: var(--shadow-soft);
   isolation: isolate;
+  overflow: clip;
 }
 
 .hero::before {
@@ -227,6 +237,7 @@ h3 {
   margin-top: 0.55rem;
   color: #d9e1f1;
   max-width: 78ch;
+  overflow-wrap: anywhere;
 }
 
 .hero-meta {
@@ -299,6 +310,7 @@ h3 {
   backdrop-filter: blur(7px);
   box-shadow: var(--shadow-soft);
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft);
+  overflow: clip;
 }
 
 .panel-elevated {
@@ -359,36 +371,44 @@ h3 {
   padding: 0.68rem 0.78rem;
   background: rgba(9, 13, 21, 0.55);
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
+  overflow: clip;
 }
 
 .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   gap: 0.8rem;
-  flex-wrap: wrap;
 }
 
 .row > * {
   min-width: 0;
+  max-width: 100%;
 }
 
 .small {
   color: var(--muted);
   font-size: 0.88rem;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 999px;
   padding: 0.24rem 0.7rem;
   font-size: 0.74rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  line-height: 1.2;
   border: 1px solid rgba(215, 179, 117, 0.5);
   color: var(--brand-2);
   background: rgba(215, 179, 117, 0.15);
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .btn {
@@ -517,6 +537,7 @@ code {
   border-radius: 8px;
   padding: 0.08rem 0.35rem;
   color: #f2d8a7;
+  overflow-wrap: anywhere;
 }
 
 .note-subtle {
@@ -536,6 +557,7 @@ code {
   background: rgba(8, 12, 19, 0.62);
   margin-bottom: 0.75rem;
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft);
+  overflow: clip;
 }
 
 .match-card h3 {
@@ -559,6 +581,7 @@ code {
   padding: 0.75rem 0.85rem;
   margin-bottom: 0.58rem;
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft);
+  overflow: clip;
 }
 
 .scenario-card h3 {
@@ -572,6 +595,7 @@ code {
   margin-bottom: 0.55rem;
   background: rgba(9, 13, 21, 0.58);
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft);
+  overflow: clip;
 }
 
 .program-grid {
@@ -586,6 +610,7 @@ code {
   padding: 0.72rem 0.78rem;
   background: rgba(8, 12, 20, 0.6);
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
+  overflow: clip;
 }
 
 .program-card h3 {
@@ -604,6 +629,7 @@ code {
   padding: 0.7rem 0.75rem;
   background: linear-gradient(150deg, rgba(27, 21, 12, 0.42), rgba(12, 17, 29, 0.7));
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft);
+  overflow: clip;
 }
 
 .quality-item strong {
@@ -728,6 +754,13 @@ html.layout-overflow .shell {
 
   .cols-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
   }
 }
 
