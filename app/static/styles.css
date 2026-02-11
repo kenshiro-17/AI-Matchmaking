@@ -1,14 +1,14 @@
 :root {
-  --bg: #07090e;
-  --bg-layer: #101521;
+  --bg: #030508;
+  --bg-layer: #090f18;
   --surface: rgba(16, 20, 30, 0.82);
   --surface-2: rgba(21, 27, 40, 0.92);
-  --glass-surface: rgba(16, 22, 36, 0.54);
-  --glass-surface-strong: rgba(14, 20, 34, 0.72);
-  --glass-line: rgba(214, 229, 255, 0.24);
-  --glass-highlight: rgba(255, 255, 255, 0.14);
+  --glass-surface: rgba(8, 12, 20, 0.52);
+  --glass-surface-strong: rgba(6, 10, 18, 0.76);
+  --glass-line: rgba(214, 229, 255, 0.2);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
   --glass-blur: 12px;
-  --glass-shadow: 0 22px 44px rgba(0, 0, 0, 0.38);
+  --glass-shadow: 0 24px 48px rgba(0, 0, 0, 0.46);
   --line: rgba(188, 201, 224, 0.2);
   --line-strong: rgba(214, 180, 119, 0.38);
   --text: #ecf0fa;
@@ -46,9 +46,9 @@ body {
   margin: 0;
   color: var(--text);
   background:
-    radial-gradient(1200px 600px at 7% -8%, rgba(215, 179, 117, 0.16), transparent 60%),
-    radial-gradient(900px 520px at 100% -10%, rgba(143, 198, 255, 0.12), transparent 65%),
-    linear-gradient(180deg, #080a11 0%, #07090e 35%, #0b1119 100%);
+    radial-gradient(1200px 600px at 7% -8%, rgba(215, 179, 117, 0.12), transparent 62%),
+    radial-gradient(900px 520px at 100% -10%, rgba(143, 198, 255, 0.09), transparent 66%),
+    linear-gradient(180deg, #030508 0%, #020407 38%, #060c14 100%);
   font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
   letter-spacing: 0.01em;
 }
@@ -59,8 +59,8 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
   background-size: 28px 28px;
   mask-image: radial-gradient(circle at center, black 35%, transparent 90%);
 }
@@ -71,8 +71,8 @@ body::after {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(520px 320px at 84% 10%, rgba(143, 198, 255, 0.11), transparent 70%),
-    radial-gradient(460px 300px at 14% 16%, rgba(215, 179, 117, 0.09), transparent 72%);
+    radial-gradient(520px 320px at 84% 10%, rgba(143, 198, 255, 0.08), transparent 72%),
+    radial-gradient(460px 300px at 14% 16%, rgba(215, 179, 117, 0.07), transparent 74%);
 }
 
 a {
@@ -112,8 +112,8 @@ h3 {
   gap: 0.8rem;
   border: 1px solid var(--glass-line);
   background:
-    linear-gradient(140deg, rgba(30, 39, 58, 0.28), rgba(9, 14, 24, 0.56)),
-    linear-gradient(120deg, rgba(14, 18, 27, 0.72), rgba(18, 24, 36, 0.5));
+    linear-gradient(140deg, rgba(30, 39, 58, 0.2), rgba(9, 14, 24, 0.54)),
+    linear-gradient(120deg, rgba(10, 14, 22, 0.74), rgba(12, 18, 30, 0.52));
   border-radius: var(--radius-lg);
   padding: 0.95rem 1.05rem;
   margin-bottom: 1rem;
@@ -128,8 +128,8 @@ h3 {
   border-color: rgba(214, 180, 119, 0.42);
   box-shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
   background:
-    linear-gradient(140deg, rgba(34, 45, 66, 0.3), rgba(8, 13, 23, 0.62)),
-    linear-gradient(120deg, rgba(10, 14, 22, 0.76), rgba(16, 23, 36, 0.66));
+    linear-gradient(140deg, rgba(34, 45, 66, 0.22), rgba(8, 13, 23, 0.6)),
+    linear-gradient(120deg, rgba(8, 12, 20, 0.78), rgba(12, 19, 30, 0.64));
 }
 
 .topbar strong {
@@ -197,7 +197,7 @@ h3 {
   color: var(--text);
   font-size: 0.86rem;
   white-space: nowrap;
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: border-color var(--motion-fast) var(--easing-soft), color var(--motion-fast) var(--easing-soft), transform var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
@@ -213,9 +213,9 @@ h3 {
   border: 1px solid var(--line-strong);
   border-radius: 22px;
   background:
-    linear-gradient(130deg, rgba(26, 32, 48, 0.3), rgba(14, 20, 32, 0.62)),
-    linear-gradient(130deg, rgba(14, 18, 29, 0.78), rgba(25, 33, 51, 0.55)),
-    radial-gradient(80% 100% at 10% 0%, rgba(215, 179, 117, 0.2), transparent 65%);
+    linear-gradient(130deg, rgba(26, 32, 48, 0.2), rgba(10, 16, 28, 0.6)),
+    linear-gradient(130deg, rgba(10, 14, 22, 0.8), rgba(16, 24, 38, 0.52)),
+    radial-gradient(80% 100% at 10% 0%, rgba(215, 179, 117, 0.16), transparent 66%);
   color: #fff;
   padding: clamp(1rem, 2vw, 1.45rem);
   margin-bottom: 1rem;
@@ -292,7 +292,7 @@ h3 {
   border: 1px solid rgba(194, 206, 227, 0.28);
   border-radius: 12px;
   padding: 0.58rem 0.65rem;
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
@@ -334,7 +334,7 @@ h3 {
 .panel {
   border: 1px solid var(--glass-line);
   background:
-    linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01)),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.008)),
     linear-gradient(140deg, var(--glass-surface), var(--glass-surface-strong));
   border-radius: var(--radius-lg);
   padding: 1rem;
@@ -367,8 +367,8 @@ h3 {
   border-radius: var(--radius-md);
   padding: 0.82rem;
   background:
-    linear-gradient(140deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.015)),
-    rgba(13, 17, 26, 0.5);
+    linear-gradient(140deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
+    rgba(10, 14, 22, 0.52);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -402,8 +402,8 @@ h3 {
   margin-bottom: 0.55rem;
   padding: 1rem 1.05rem 1.02rem;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015)),
-    rgba(9, 13, 21, 0.46);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+    rgba(8, 12, 20, 0.48);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   display: flex;
@@ -466,8 +466,8 @@ h3 {
 .btn {
   border: 1px solid rgba(194, 206, 227, 0.3);
   background:
-    linear-gradient(140deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.015)),
-    rgba(11, 15, 23, 0.52);
+    linear-gradient(140deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.012)),
+    rgba(10, 14, 22, 0.56);
   color: var(--text);
   border-radius: 999px;
   padding: 0.5rem 0.84rem;
@@ -507,7 +507,7 @@ h3 {
 .btn-primary {
   border-color: rgba(214, 180, 119, 0.6);
   background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.03)),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02)),
     linear-gradient(115deg, rgba(164, 125, 62, 0.88), rgba(214, 180, 119, 0.86));
   color: #1b1308;
   box-shadow: 0 8px 22px rgba(167, 126, 62, 0.35);
@@ -516,7 +516,7 @@ h3 {
 .btn-secondary {
   border-color: rgba(143, 198, 255, 0.4);
   background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.025)),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)),
     linear-gradient(115deg, rgba(34, 63, 104, 0.74), rgba(70, 123, 196, 0.74));
   color: #e6f3ff;
 }
@@ -524,7 +524,7 @@ h3 {
 .btn-danger {
   border-color: rgba(255, 159, 159, 0.6);
   background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.016)),
     linear-gradient(115deg, rgba(110, 36, 36, 0.82), rgba(166, 58, 58, 0.82));
   color: #fff1f1;
 }
@@ -561,8 +561,8 @@ textarea {
   font: inherit;
   color: #f3f6ff;
   background:
-    linear-gradient(140deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.015)),
-    rgba(8, 11, 18, 0.56);
+    linear-gradient(140deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
+    rgba(6, 10, 16, 0.62);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -600,7 +600,7 @@ textarea:focus {
 .note {
   border-left: 3px solid var(--brand);
   background:
-    linear-gradient(140deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015)),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
     rgba(215, 179, 117, 0.12);
   color: #f8ebd2;
   padding: 0.68rem 0.82rem;
@@ -640,8 +640,10 @@ code {
   border-radius: 14px;
   padding: 1.02rem 1.06rem 1.06rem;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.018)),
-    rgba(8, 12, 19, 0.5);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+    rgba(7, 11, 18, 0.56);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   margin-bottom: 0.75rem;
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft);
   overflow: clip;
@@ -663,12 +665,17 @@ code {
 
 .scenario-card {
   border: 1px solid rgba(215, 179, 117, 0.34);
-  background: linear-gradient(140deg, rgba(25, 20, 12, 0.4), rgba(13, 18, 30, 0.7));
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.012)),
+    linear-gradient(140deg, rgba(19, 16, 11, 0.38), rgba(8, 12, 22, 0.56));
   border-radius: 12px;
   padding: 1.1rem 1.12rem 1.14rem;
   margin-bottom: 0.58rem;
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), box-shadow var(--motion-fast) var(--easing-soft);
   overflow: visible;
+  backdrop-filter: blur(11px) saturate(126%);
+  -webkit-backdrop-filter: blur(11px) saturate(126%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 30px rgba(0, 0, 0, 0.34);
 }
 
 .scenario-card h3 {
@@ -797,6 +804,7 @@ code {
   margin-bottom: 0;
   padding: 1.24rem 1.36rem 1.28rem;
   border-radius: 14px;
+  border-color: rgba(215, 179, 117, 0.4);
 }
 
 .scenario-list .scenario-title-row {
@@ -819,8 +827,8 @@ code {
   padding: 0.75rem 0.78rem;
   margin-bottom: 0.55rem;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015)),
-    rgba(9, 13, 21, 0.48);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+    rgba(8, 12, 20, 0.5);
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft);
   overflow: clip;
 }
@@ -836,8 +844,8 @@ code {
   border-radius: 12px;
   padding: 0.72rem 0.78rem;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015)),
-    rgba(8, 12, 20, 0.48);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+    rgba(8, 12, 20, 0.5);
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
   overflow: clip;
 }
@@ -857,8 +865,8 @@ code {
   border-radius: 12px;
   padding: 0.7rem 0.75rem;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015)),
-    linear-gradient(150deg, rgba(27, 21, 12, 0.34), rgba(12, 17, 29, 0.58));
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+    linear-gradient(150deg, rgba(22, 18, 11, 0.3), rgba(8, 13, 22, 0.58));
   transition: transform var(--motion-fast) var(--easing-soft), border-color var(--motion-fast) var(--easing-soft);
   overflow: clip;
 }
