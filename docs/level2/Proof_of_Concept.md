@@ -25,7 +25,7 @@
 - UI is production-polished with:
   - Proof of Talk logo and favicon,
   - premium but lightweight animations,
-  - responsive spacing fixes for card-heavy sections,
+  - responsive spacing fixes for card-heavy sections (more generous card padding + improved typography spacing),
   - cross-device stability under window resize/orientation changes.
 
 ## Run

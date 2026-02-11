@@ -30,7 +30,7 @@ This working prototype is configured with a strict quality-over-quantity policy:
   - favicon and `/favicon.ico` route support,
   - premium motion with reduced-motion safe fallback,
   - reveal fallback logic to prevent hidden sections after resize/orientation changes,
-  - spacing fixes for Curated Directory and Strategic Scenarios text cards.
+  - spacing fixes for Curated Directory and Strategic Scenarios text cards (more generous card padding + improved line-height for readability).
 - Cross-device verification executed with Playwright across:
   - iPhone, Android, tablet, laptop, desktop, and big monitor viewports.
 
