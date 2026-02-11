@@ -7,6 +7,7 @@ matchmaking.db
 .env
 .vercel
 .DS_Store
+.cache/
 
 # Local AI/planning docs (keep local, do not push)
 docs/Project_Master_Guide.md
