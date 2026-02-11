@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Organizer Workspace</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="topbar">
+        <strong>Organizer Workspace</strong>
+        <div class="navlinks">
+          <a href="/">Overview</a>
+          <a href="/organizer/export/matches.csv">Export Matches CSV</a>
+          <a href="/organizer/audit">Audit Log</a>
+          <span class="small">{{ user.label }} ({{ user.role }})</span>
+          <a href="/logout">Logout</a>
+        </div>
+      </nav>
+
+      <section class="hero">
+        <p class="section-kicker">Summit Operations</p>
+        <h1>Operations Console</h1>
+        <p>Add attendees, enrich external profile signals, and export quality-gated matches.</p>
+        <div class="hero-meta">
+          <span class="badge">Organizer-Only Controls</span>
+          <span class="badge">Audit Tracked</span>
+          <span class="badge">Role-Scoped Security</span>
+        </div>
+      </section>
+
+      {% if message %}
+      <section class="panel">
+        <div class="note">{{ message }}</div>
+      </section>
+      {% endif %}
+
+      <section class="panel panel-elevated">
+        <p class="section-kicker">Performance Snapshot</p>
+        <h2>Snapshot</h2>
+        <div class="cols-3">
+          <div class="kpi"><strong>{{ attendees|length }}</strong><span>Total Attendees</span></div>
+          <div class="kpi"><strong>{{ metrics.feedback_count }}</strong><span>Feedback Records</span></div>
+          <div class="kpi"><strong>{{ metrics.positive_rate }}</strong><span>Positive Rate</span></div>
+        </div>
+      </section>
+
+      <section class="cols-2">
+        <article class="panel panel-elevated">
+          <p class="section-kicker">Attendee Provisioning</p>
+          <h2>Add Attendee</h2>
+          <form action="/organizer/attendees" method="post" class="form-grid">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <div><label>Name</label><input name="name" required /></div>
+            <div><label>Role</label><input name="role" required /></div>
+            <div><label>Company</label><input name="company" required /></div>
+            <div><label>Primary Goal</label>
+              <select name="primary_goal" required>
+                <option>Investment</option>
+                <option>Partnerships</option>
+                <option>Hiring</option>
+                <option>Regulation</option>
+                <option>Learning</option>
+              </select>
+            </div>
+            <div><label>Availability (csv)</label><input name="availability" placeholder="day1_pm,day2_am" /></div>
+            <div><label>Language</label><input name="language" value="English" /></div>
+            <div><label>Secondary Goals</label><input name="secondary_goals" /></div>
+            <div><label>Focus Text</label><input name="focus_text" /></div>
+            <div><label>Seek Text</label><input name="seek_text" /></div>
+            <div><label>Offer Text</label><input name="offer_text" /></div>
+            <div><label>Login Email (optional)</label><input name="login_email" type="email" placeholder="exec@company.com" /></div>
+            <div><label>Temporary Password (optional)</label><input name="temp_password" type="password" placeholder="Strong temp password" /></div>
+            <div class="actions full-row">
+              <button class="btn btn-primary" type="submit">Create Attendee</button>
+            </div>
+          </form>
+          <p class="small note-subtle">If no custom credentials are set, the app creates <code>attendee-&lt;id&gt;@pot.local</code> with passcode <code>attendee123-&lt;id&gt;</code>.</p>
+        </article>
+
+        <article class="panel panel-elevated">
+          <p class="section-kicker">Signal Enrichment</p>
+          <h2>External Enrichment (Company Website)</h2>
+          <form action="/organizer/enrich" method="post" class="form-grid">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <div>
+              <label>Attendee ID</label>
+              <input name="attendee_id" type="number" min="1" required />
+            </div>
+            <div>
+              <label>Source URL</label>
+              <input name="source_url" type="url" placeholder="https://company.com" required />
+            </div>
+            <div class="actions full-row">
+              <button class="btn btn-secondary" type="submit">Run Enrichment</button>
+            </div>
+          </form>
+          <p class="small note-subtle">API alternative: <code>POST /v1/enrich/company?attendee_id=&lt;id&gt;&amp;source_url=&lt;url&gt;</code></p>
+
+          <h3>Attendee Directory</h3>
+          <ul class="list">
+            {% for attendee in attendees %}
+            <li class="list-card">
+              <div class="row">
+                <a href="/attendees/{{ attendee.id }}"><strong>#{{ attendee.id }} {{ attendee.name }}</strong></a>
+                <span class="badge">{{ attendee.primary_goal }}</span>
+              </div>
+              <div class="small">{{ attendee.role }} · {{ attendee.company }}</div>
+            </li>
+            {% endfor %}
+          </ul>
+          <p class="small note-subtle">Showing page {{ page }} of {{ total_pages }} · {{ total_attendees }} total attendees.</p>
+          <div class="pagination-row">
+            {% if page > 1 %}
+            <a class="btn" href="/organizer?page={{ page - 1 }}&page_size={{ page_size }}">Previous</a>
+            {% endif %}
+            {% if page < total_pages %}
+            <a class="btn" href="/organizer?page={{ page + 1 }}&page_size={{ page_size }}">Next</a>
+            {% endif %}
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

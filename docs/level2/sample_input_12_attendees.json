@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "name": "Sarah Chen",
+    "role": "Managing Director",
+    "company": "Sovereign Wealth Fund",
+    "primary_goal": "Investment",
+    "secondary_goals": "Partnerships,Policy",
+    "availability": "day1_pm,day2_am"
+  },
+  {
+    "id": 2,
+    "name": "Marcus Weber",
+    "role": "CEO & Founder",
+    "company": "Tokenization Platform",
+    "primary_goal": "Investment",
+    "secondary_goals": "Partnerships",
+    "availability": "day1_pm,day2_pm"
+  },
+  {
+    "id": 3,
+    "name": "Aisha Patel",
+    "role": "General Partner",
+    "company": "Crypto VC Fund",
+    "primary_goal": "Investment",
+    "secondary_goals": "Learning",
+    "availability": "day1_am,day2_am"
+  },
+  {
+    "id": 4,
+    "name": "Kenji Nakamura",
+    "role": "CTO",
+    "company": "Layer 2 Protocol",
+    "primary_goal": "Partnerships",
+    "secondary_goals": "Hiring,Learning",
+    "availability": "day1_pm,day2_am"
+  },
+  {
+    "id": 5,
+    "name": "Elena Rossi",
+    "role": "Head of Digital Assets",
+    "company": "European Bank",
+    "primary_goal": "Partnerships",
+    "secondary_goals": "Regulation,Learning",
+    "availability": "day1_pm,day2_pm"
+  },
+  {
+    "id": 6,
+    "name": "Noah Ibrahim",
+    "role": "Policy Advisor",
+    "company": "EU Digital Finance Forum",
+    "primary_goal": "Regulation",
+    "secondary_goals": "Partnerships",
+    "availability": "day1_am,day2_pm"
+  },
+  {
+    "id": 7,
+    "name": "Priya Nair",
+    "role": "Founder & CEO",
+    "company": "IdentityMesh",
+    "primary_goal": "Partnerships",
+    "secondary_goals": "Investment",
+    "availability": "day1_am,day2_am"
+  },
+  {
+    "id": 8,
+    "name": "David Klein",
+    "role": "Managing Partner",
+    "company": "Institutional Digital Capital",
+    "primary_goal": "Investment",
+    "secondary_goals": "Learning",
+    "availability": "day1_pm,day2_am"
+  },
+  {
+    "id": 9,
+    "name": "Luc Martin",
+    "role": "Chief Strategy Officer",
+    "company": "Global Custody Network",
+    "primary_goal": "Partnerships",
+    "secondary_goals": "Investment",
+    "availability": "day1_pm,day2_pm"
+  },
+  {
+    "id": 10,
+    "name": "Sofia Alvarez",
+    "role": "Founder & CEO",
+    "company": "DeFi Treasury Labs",
+    "primary_goal": "Investment",
+    "secondary_goals": "Partnerships",
+    "availability": "day1_am,day2_pm"
+  },
+  {
+    "id": 11,
+    "name": "Thomas Reed",
+    "role": "Head of Ventures",
+    "company": "Pan-Euro Bank Group",
+    "primary_goal": "Partnerships",
+    "secondary_goals": "Investment,Regulation",
+    "availability": "day1_pm,day2_am"
+  },
+  {
+    "id": 12,
+    "name": "Mina Park",
+    "role": "CTO",
+    "company": "SecureChain Labs",
+    "primary_goal": "Hiring",
+    "secondary_goals": "Partnerships",
+    "availability": "day1_am,day2_pm"
+  }
+]

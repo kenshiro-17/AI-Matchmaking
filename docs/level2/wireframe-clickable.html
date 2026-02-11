@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Proof of Talk Matchmaking - Level 2 Wireframe</title>
+    <style>
+      body { font-family: "Helvetica Neue", Arial, sans-serif; margin: 0; background: #f5f7fa; color: #1f2a37; }
+      .bar { background: #0f172a; color: #fff; padding: 14px 18px; }
+      .bar a { color: #93c5fd; margin-right: 14px; text-decoration: none; font-weight: 600; }
+      .wrap { max-width: 1080px; margin: 22px auto; padding: 0 14px; }
+      .row { display: grid; grid-template-columns: 290px 1fr; gap: 14px; }
+      .card { background: #fff; border: 2px dashed #c5ced9; border-radius: 12px; padding: 12px; }
+      .list button { width: 100%; text-align: left; border: 1px solid #d3dce8; background: #f8fafc; margin-bottom: 8px; padding: 10px; border-radius: 8px; cursor: pointer; }
+      .match { border: 1px solid #d7dfea; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
+      .badge { font-size: 11px; background: #fef3c7; color: #92400e; border-radius: 999px; padding: 2px 8px; }
+      .actions button { margin-right: 8px; margin-top: 6px; border: 1px solid #c9d4e5; background: #f8fafc; padding: 7px 10px; border-radius: 8px; cursor: pointer; }
+      .small { color: #5b6b7b; font-size: 13px; }
+      @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <strong>Wireframe Prototype</strong>
+      <a href="#pre-event">Pre-Event</a>
+      <a href="#during-event">During Event</a>
+      <a href="#organizer">Organizer View</a>
+    </div>
+    <div class="wrap">
+      <h1>Proof of Talk Matchmaking (Clickable Wireframe)</h1>
+      <p class="small">Low-fidelity interaction model for Level 2 submission. Click attendee names to simulate profile context switch.</p>
+      <div class="row" id="pre-event">
+        <section class="card">
+          <h2>Attendee List</h2>
+          <div class="list">
+            <button onclick="setAttendee('Sarah Chen', 'Investment', 'day1_pm, day2_am')">Sarah Chen · Managing Director</button>
+            <button onclick="setAttendee('Marcus Weber', 'Investment', 'day1_pm, day2_pm')">Marcus Weber · CEO & Founder</button>
+            <button onclick="setAttendee('Elena Rossi', 'Partnerships', 'day1_pm, day2_pm')">Elena Rossi · Head of Digital Assets</button>
+            <button onclick="setAttendee('Kenji Nakamura', 'Partnerships', 'day1_pm, day2_am')">Kenji Nakamura · CTO</button>
+          </div>
+          <h3>Filters</h3>
+          <p class="small">[ ] Investment<br />[ ] Partnerships<br />[ ] Regulation<br />[ ] Hiring</p>
+        </section>
+        <section class="card">
+          <h2>Quality Recommendations (3-7)</h2>
+          <p class="small">Display rule: only matches with score &gt; 65.</p>
+          <p><strong id="name">Sarah Chen</strong> · Goal: <strong id="goal">Investment</strong> · Availability: <span id="avail">day1_pm, day2_am</span></p>
+
+          <article class="match">
+            <h3>Elena Rossi <span class="small">European Bank</span></h3>
+            <p class="small">Score Band: High</p>
+            <ul>
+              <li>Complementary value: institutional capital + bank adoption pathway.</li>
+              <li>Shared focus: compliant tokenization and custody infrastructure.</li>
+              <li>Overlapping meeting windows for Day 1 PM.</li>
+            </ul>
+            <div class="actions">
+              <button>Request Intro</button><button>Save</button><button>Not Relevant</button>
+            </div>
+          </article>
+
+          <article class="match">
+            <h3>Marcus Weber <span class="small">Tokenization Platform</span></h3>
+            <p class="small">Score Band: High</p>
+            <ul>
+              <li>Primary objective alignment: investment-ready tokenization founder.</li>
+              <li>Asymmetric value exchange is strong (capital ↔ distribution strategy).</li>
+              <li>Can progress to concrete follow-up in-event.</li>
+            </ul>
+            <div class="actions">
+              <button>Request Intro</button><button>Save</button><button>Not Relevant</button>
+            </div>
+          </article>
+
+          <article class="match">
+            <h3>Aisha Patel <span class="small">Crypto VC Fund</span> <span class="badge">Exploration Slot</span></h3>
+            <p class="small">Score Band: Medium-High</p>
+            <ul>
+              <li>Diversity injection for non-obvious co-investment opportunities.</li>
+              <li>Strategic fit remains above minimum quality threshold.</li>
+            </ul>
+            <div class="actions">
+              <button>Request Intro</button><button>Save</button><button>Not Relevant</button>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <section class="card" id="during-event" style="margin-top: 14px;">
+        <h2>During Event Nudge Panel</h2>
+        <p><strong>Nudge:</strong> “You and Elena Rossi are both free in 20 minutes near the West Lounge. Accept intro?”</p>
+        <button>Accept</button> <button>Pass</button>
+      </section>
+
+      <section class="card" id="organizer" style="margin-top: 14px;">
+        <h2>Organizer View</h2>
+        <p class="small">Quality-first control panel</p>
+        <ul>
+          <li>High-value unmatched attendees: 7</li>
+          <li>Accepted intros today: 34</li>
+          <li>Positive match feedback rate: 0.71</li>
+          <li>Roundtable suggestion: “Bank Execs + Compliance Infra CTOs”</li>
+          <li>Scenario surfaced: “Kenji Nakamura ↔ Elena Rossi” (compliance infra fit)</li>
+          <li>Scenario surfaced: “Marcus Weber ↔ Aisha Patel ↔ Sarah Chen” (founder-GP-LP chain)</li>
+        </ul>
+      </section>
+    </div>
+
+    <script>
+      function setAttendee(name, goal, availability) {
+        document.getElementById("name").textContent = name;
+        document.getElementById("goal").textContent = goal;
+        document.getElementById("avail").textContent = availability;
+      }
+    </script>
+  </body>
+</html>

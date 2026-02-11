@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ attendee.name }} · Matchmaking</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="topbar">
+        <strong>Attendee Workspace</strong>
+        <div class="navlinks">
+          {% if user.role == 'organizer' %}<a href="/organizer">Organizer Workspace</a>{% endif %}
+          <a href="/">Overview</a>
+          <span class="small">{{ user.label }} ({{ user.role }})</span>
+          <a href="/logout">Logout</a>
+        </div>
+      </nav>
+
+      <section class="hero">
+        <p class="section-kicker">Attendee Dashboard</p>
+        <h1>{{ attendee.name }}</h1>
+        <p>{{ attendee.role }} · {{ attendee.company }} · Primary Goal: {{ attendee.primary_goal }}</p>
+        <div class="hero-meta">
+          <span class="badge">Quality-Gated Matches</span>
+          <span class="badge">Explainable Reasons</span>
+          <span class="badge">Double-Opt-In Intros</span>
+        </div>
+      </section>
+
+      <section class="panel panel-elevated">
+        <p class="section-kicker">Policy</p>
+        <h2>Quality Recommendation Policy</h2>
+        <p class="small">Only matches with score &gt; {{ quality_threshold }} are shown. Target range is {{ min_matches }}-{{ max_matches }} when enough candidates qualify.</p>
+      </section>
+
+      <section class="cols-2">
+        <article class="panel panel-elevated">
+          <p class="section-kicker">Top Recommendations</p>
+          <h2>Recommended Matches</h2>
+          {% if cards|length == 0 %}
+            <p class="note">No candidates currently pass quality threshold. Organizer curation is recommended.</p>
+          {% endif %}
+
+          {% for card in cards %}
+          <div class="match-card">
+            <div class="row">
+              <h3>{{ card.candidate_name }}</h3>
+              {% if card.exploration_flag %}<span class="badge">Exploration Slot</span>{% endif %}
+            </div>
+            <div class="small">{{ card.candidate_role }} · {{ card.candidate_company }} · Score {{ card.score }}</div>
+            <ul class="reasons-list">
+              {% for reason in card.reasons %}
+                {% if reason %}<li>{{ reason }}</li>{% endif %}
+              {% endfor %}
+            </ul>
+
+            <form action="/intros/request" method="post" class="inline-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+              <input type="hidden" name="requester_id" value="{{ attendee.id }}" />
+              <input type="hidden" name="candidate_id" value="{{ card.candidate_id }}" />
+              <div class="full">
+                <label>Intro note (optional)</label>
+                <input name="note" placeholder="Context for organizer/candidate" />
+              </div>
+              <button class="btn btn-primary full" type="submit">Request Intro</button>
+            </form>
+
+            <form action="/feedback" method="post" class="inline-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+              <input type="hidden" name="attendee_id" value="{{ attendee.id }}" />
+              <input type="hidden" name="match_id" value="{{ card.match_id }}" />
+              <div>
+                <label>Rating</label>
+                <select name="rating">
+                  <option value="5">5 - Excellent</option>
+                  <option value="4">4 - Strong</option>
+                  <option value="3">3 - Neutral</option>
+                  <option value="2">2 - Weak</option>
+                  <option value="1">1 - Bad</option>
+                </select>
+              </div>
+              <div>
+                <label>Outcome</label>
+                <select name="outcome">
+                  <option value="met">Met</option>
+                  <option value="follow_up">Follow Up</option>
+                  <option value="declined">Declined</option>
+                  <option value="reviewed">Reviewed Only</option>
+                </select>
+              </div>
+              <div class="full">
+                <label>Comment</label>
+                <input name="comment" placeholder="Signal quality feedback" />
+              </div>
+              <button class="btn btn-secondary full" type="submit">Submit Feedback</button>
+            </form>
+          </div>
+          {% endfor %}
+        </article>
+
+        <article class="panel panel-elevated">
+          <p class="section-kicker">Intro Management</p>
+          <h2>Incoming Intro Requests</h2>
+          {% if incoming_requests|length == 0 %}
+            <p class="small">No incoming requests.</p>
+          {% endif %}
+          <ul class="list">
+            {% for req in incoming_requests %}
+            <li class="list-card">
+              <div class="row">
+                <strong>Request #{{ req.id }}</strong>
+                <span class="badge">{{ req.status }}</span>
+              </div>
+              <div class="small">Requester ID {{ req.requester_id }} -> You</div>
+              {% if req.note %}<div class="small">Note: {{ req.note }}</div>{% endif %}
+              {% if req.status == 'pending_candidate' %}
+              <form action="/intros/respond" method="post" class="actions">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+                <input type="hidden" name="intro_id" value="{{ req.id }}" />
+                <input type="hidden" name="actor_id" value="{{ attendee.id }}" />
+                <button class="btn btn-primary" type="submit" name="action" value="accept">Accept Intro</button>
+                <button class="btn" type="submit" name="action" value="decline">Decline</button>
+              </form>
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+
+          <h2>Strategic Opportunities</h2>
+          {% if scenarios|length == 0 %}
+            <p class="small">No pair/triad opportunities surfaced for this attendee.</p>
+          {% endif %}
+          {% for scenario in scenarios %}
+          <div class="scenario-card">
+            <h3>{{ scenario.title }} <span class="badge">{{ scenario.type }}</span></h3>
+            <div class="small">{{ scenario.participants | join(" → ") }}</div>
+            <p class="small">{{ scenario.explanation }}</p>
+          </div>
+          {% endfor %}
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

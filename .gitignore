@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+matchmaking.db
+.env
+.vercel
+.DS_Store
+
+# Local AI/planning docs (keep local, do not push)
+docs/Project_Master_Guide.md
+docs/plans/
+docs/local/

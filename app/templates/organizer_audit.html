@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Organizer Audit Log</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="topbar">
+        <strong>Audit Log</strong>
+        <div class="navlinks">
+          <a href="/organizer">Organizer Workspace</a>
+          <a href="/">Overview</a>
+          <span class="small">{{ user.label }} ({{ user.role }})</span>
+          <a href="/logout">Logout</a>
+        </div>
+      </nav>
+
+      <section class="hero">
+        <p class="section-kicker">Security & Compliance</p>
+        <h1>Recent Audit Events</h1>
+        <p>Immutable trace of security-sensitive actions across auth, attendee updates, intros, enrichment, and exports.</p>
+      </section>
+
+      <section class="panel panel-elevated">
+        <h2>Recent Audit Events</h2>
+        <ul class="list">
+          {% for log in logs %}
+          <li class="audit-row">
+            <div class="row">
+              <strong>{{ log.action }} <span class="badge">{{ log.status }}</span></strong>
+              <span class="small">{{ log.created_at }}</span>
+            </div>
+            <div class="small">Actor: {{ log.actor_label or 'n/a' }} ({{ log.actor_role }})</div>
+            <div class="small">Target: {{ log.target_type }} {{ log.target_id }}</div>
+            {% if log.details %}<div class="small">Details: {{ log.details }}</div>{% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

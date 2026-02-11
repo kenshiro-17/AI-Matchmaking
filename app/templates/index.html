@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Proof of Talk Matchmaking</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="topbar">
+        <strong>Proof of Talk Relationship Engine</strong>
+        <div class="navlinks">
+          <a href="/">Overview</a>
+          <a href="/organizer">Organizer Workspace</a>
+          <span class="small">{{ user.label }} ({{ user.role }})</span>
+          <a href="/logout">Logout</a>
+        </div>
+      </nav>
+
+      <section class="hero">
+        <p class="section-kicker">Proof of Talk 2026 · Intelligence Layer</p>
+        <h1>Conversations, Not Contacts.</h1>
+        <p>This engine curates high-conviction introductions for a selective summit audience where capital, policy, and infrastructure decisions are actually made.</p>
+        <div class="hero-meta">
+          <span class="badge">2,500 Curated Attendees</span>
+          <span class="badge">C-Suite Heavy Mix</span>
+          <span class="badge">Strategic Scenario Detection</span>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="/organizer">Open Organizer Console</a>
+          <a class="btn btn-secondary" href="/organizer/export/matches.csv">Export Match Pack</a>
+        </div>
+        <div class="hero-rail">
+          <div class="hero-chip">
+            <strong>85%</strong>
+            <span>C-level, founders, institutional leaders</span>
+          </div>
+          <div class="hero-chip">
+            <strong>$18T+</strong>
+            <span>Attendee represented AUM</span>
+          </div>
+          <div class="hero-chip">
+            <strong>&gt;65</strong>
+            <span>Minimum score for surfaced matches</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel panel-elevated">
+        <p class="section-kicker">Live Metrics</p>
+        <h2>Event Metrics</h2>
+        <div class="cols-3">
+          <div class="kpi"><strong>{{ metrics.feedback_count }}</strong><span>Feedback Count</span></div>
+          <div class="kpi"><strong>{{ metrics.avg_rating }}</strong><span>Average Rating</span></div>
+          <div class="kpi"><strong>{{ metrics.positive_rate }}</strong><span>Positive Rate</span></div>
+        </div>
+      </section>
+
+      <section class="panel panel-elevated">
+        <p class="section-kicker">Program Architecture</p>
+        <h2>Summit Tracks That Drive Match Intent</h2>
+        <div class="program-grid">
+          <article class="program-card">
+            <h3>Institutional Capital</h3>
+            <p class="small">Sovereign funds, allocators, and venture partnerships aligned around deployable opportunities.</p>
+          </article>
+          <article class="program-card">
+            <h3>Compliant Infrastructure</h3>
+            <p class="small">Custody, tokenization rails, and protocol stacks suitable for bank-grade integration.</p>
+          </article>
+          <article class="program-card">
+            <h3>Policy & Regulation</h3>
+            <p class="small">Decision-makers shaping cross-border frameworks and standards for digital assets.</p>
+          </article>
+          <article class="program-card">
+            <h3>Strategic Partnerships</h3>
+            <p class="small">Founder, enterprise, and distribution-side synergies mapped for concrete follow-through.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="cols-2">
+        <article class="panel panel-elevated">
+          <p class="section-kicker">Curated Directory</p>
+          <h2>Attendee Snapshot</h2>
+          <ul class="list">
+            {% for attendee in attendees %}
+            <li class="list-card row">
+              <div>
+                <a href="/attendees/{{ attendee.id }}"><strong>{{ attendee.name }}</strong></a>
+                <div class="small">{{ attendee.role }} · {{ attendee.company }} · Goal: {{ attendee.primary_goal }}</div>
+              </div>
+              <span class="badge">{{ attendee.primary_goal }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+          <p class="small note-subtle">Showing page {{ page }} of {{ total_pages }} · {{ total_attendees }} total attendees.</p>
+          <div class="pagination-row">
+            {% if page > 1 %}
+            <a class="btn" href="/?page={{ page - 1 }}&page_size={{ page_size }}">Previous</a>
+            {% endif %}
+            {% if page < total_pages %}
+            <a class="btn" href="/?page={{ page + 1 }}&page_size={{ page_size }}">Next</a>
+            {% endif %}
+          </div>
+        </article>
+
+        <article class="panel panel-elevated">
+          <p class="section-kicker">High-Leverage Opportunities</p>
+          <h2>Strategic Scenarios</h2>
+          <ul class="list">
+            {% for scenario in scenarios %}
+            <li class="scenario-card">
+              <strong>{{ scenario.title }} <span class="badge">{{ scenario.type }}</span></strong>
+              <div class="small">{{ scenario.participants | join(" → ") }}</div>
+              <div class="small">{{ scenario.explanation }}</div>
+            </li>
+            {% endfor %}
+          </ul>
+        </article>
+      </section>
+
+      <section class="panel panel-elevated">
+        <p class="section-kicker">Quality Contract</p>
+        <div class="quality-strip">
+          <div class="quality-item">
+            <strong>Hard constraints first</strong>
+            <p class="small">Language, timing overlap, and explicit exclusions remove low-probability introductions.</p>
+          </div>
+          <div class="quality-item">
+            <strong>Explainable ranking</strong>
+            <p class="small">Every recommendation includes plain-English reasons tied to role fit and strategic relevance.</p>
+          </div>
+          <div class="quality-item">
+            <strong>Learning loop</strong>
+            <p class="small">Feedback and intro outcomes refine subsequent recommendations without waiting for retraining cycles.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

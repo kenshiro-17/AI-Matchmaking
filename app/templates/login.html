@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign In · Proof of Talk Matchmaking</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell shell-narrow">
+      <section class="hero">
+        <p class="section-kicker">Invite-Only Summit Intelligence</p>
+        <h1>Proof of Talk Matchmaking</h1>
+        <p>Curated relationship operating system for institutional-grade conversations before and during the summit.</p>
+        <div class="hero-meta">
+          <span class="badge">Precision &gt; Volume</span>
+          <span class="badge">Quality Gate Active</span>
+          <span class="badge">Role-Secured Access</span>
+        </div>
+      </section>
+
+      {% if error %}
+      <section class="panel">
+        <div class="note">{{ error }}</div>
+      </section>
+      {% endif %}
+
+      <section class="cols-2 login-grid">
+        <article class="panel panel-elevated">
+          <p class="section-kicker">Operations</p>
+          <h2>Organizer Login</h2>
+          <form action="/login" method="post" class="form-grid">
+            <input type="hidden" name="role" value="organizer" />
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <div>
+              <label>Email</label>
+              <input name="email" type="email" autocomplete="username" required />
+            </div>
+            <div>
+              <label>Password</label>
+              <input name="password" type="password" autocomplete="current-password" required />
+            </div>
+            <div class="actions full-row">
+              <button class="btn btn-primary" type="submit">Sign In as Organizer</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel panel-elevated">
+          <p class="section-kicker">Attendee Workspace</p>
+          <h2>Attendee Login</h2>
+          <form action="/login" method="post" class="form-grid">
+            <input type="hidden" name="role" value="attendee" />
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <div>
+              <label>Attendee ID</label>
+              <input name="attendee_id" type="number" min="1" value="1" required />
+            </div>
+            <div>
+              <label>Passcode</label>
+              <input name="passcode" type="password" autocomplete="current-password" required />
+            </div>
+            <div class="actions full-row">
+              <button class="btn btn-secondary" type="submit">Sign In as Attendee</button>
+            </div>
+          </form>
+          <p class="small note-subtle">Seeded attendee credentials use passcode format: <code>attendee123-&lt;attendee_id&gt;</code>.</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

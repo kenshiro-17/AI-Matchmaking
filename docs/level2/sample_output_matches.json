@@ -1,0 +1,442 @@
+[
+  {
+    "attendee_id": 1,
+    "attendee_name": "Sarah Chen",
+    "matches": [
+      {
+        "candidate_id": 3,
+        "score": 72.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Aisha Patel's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      },
+      {
+        "candidate_id": 8,
+        "score": 70.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with David Klein's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      },
+      {
+        "candidate_id": 2,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Marcus Weber's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 2,
+    "attendee_name": "Marcus Weber",
+    "matches": [
+      {
+        "candidate_id": 10,
+        "score": 76.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Sofia Alvarez's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      },
+      {
+        "candidate_id": 1,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Sarah Chen's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      },
+      {
+        "candidate_id": 8,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with David Klein's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 3,
+    "attendee_name": "Aisha Patel",
+    "matches": [
+      {
+        "candidate_id": 8,
+        "score": 74.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with David Klein's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      },
+      {
+        "candidate_id": 1,
+        "score": 72.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Sarah Chen's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      },
+      {
+        "candidate_id": 10,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Sofia Alvarez's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 4,
+    "attendee_name": "Kenji Nakamura",
+    "matches": [
+      {
+        "candidate_id": 5,
+        "score": 70.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Elena Rossi's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 7,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Priya Nair's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 9,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Luc Martin's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 11,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Thomas Reed's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 2,
+        "score": 66.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Marcus Weber's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 5,
+    "attendee_name": "Elena Rossi",
+    "matches": [
+      {
+        "candidate_id": 9,
+        "score": 70.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Luc Martin's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 10,
+        "score": 70.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Sofia Alvarez's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 11,
+        "score": 70.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Thomas Reed's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 4,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Kenji Nakamura's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 2,
+        "score": 66.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Marcus Weber's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 6,
+    "attendee_name": "Noah Ibrahim",
+    "matches": []
+  },
+  {
+    "attendee_id": 7,
+    "attendee_name": "Priya Nair",
+    "matches": [
+      {
+        "candidate_id": 11,
+        "score": 72.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Thomas Reed's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 4,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Kenji Nakamura's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 10,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Sofia Alvarez's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 8,
+    "attendee_name": "David Klein",
+    "matches": [
+      {
+        "candidate_id": 3,
+        "score": 74.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Aisha Patel's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      },
+      {
+        "candidate_id": 1,
+        "score": 70.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Sarah Chen's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      },
+      {
+        "candidate_id": 2,
+        "score": 66.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Marcus Weber's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 9,
+    "attendee_name": "Luc Martin",
+    "matches": [
+      {
+        "candidate_id": 11,
+        "score": 76.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Thomas Reed's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 2,
+        "score": 74.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Marcus Weber's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 10,
+        "score": 74.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Sofia Alvarez's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 5,
+        "score": 72.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Elena Rossi's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 4,
+        "score": 70.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Kenji Nakamura's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 10,
+    "attendee_name": "Sofia Alvarez",
+    "matches": [
+      {
+        "candidate_id": 2,
+        "score": 74.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Marcus Weber's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      },
+      {
+        "candidate_id": 3,
+        "score": 68.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Investment) aligns with Aisha Patel's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for investment outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 11,
+    "attendee_name": "Thomas Reed",
+    "matches": [
+      {
+        "candidate_id": 9,
+        "score": 76.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Luc Martin's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 2,
+        "score": 72.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Marcus Weber's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 7,
+        "score": 72.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Priya Nair's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 4,
+        "score": 70.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Kenji Nakamura's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      },
+      {
+        "candidate_id": 5,
+        "score": 70.0,
+        "exploration_flag": false,
+        "reasons": [
+          "Your primary goal (Partnerships) aligns with Elena Rossi's current focus.",
+          "You both have overlapping declared availability windows.",
+          "Strategic fit is high for partnerships outcomes."
+        ]
+      }
+    ]
+  },
+  {
+    "attendee_id": 12,
+    "attendee_name": "Mina Park",
+    "matches": []
+  }
+]
