@@ -1003,6 +1003,11 @@ def health_check():
     return {"status": "ok"}
 
 
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return RedirectResponse(url="/static/brand/favicon.svg", status_code=307)
+
+
 @app.get("/organizer/export/matches.csv")
 def export_matches_csv(request: Request, db: Session = Depends(get_db)):
     auth = require_organizer(request)
