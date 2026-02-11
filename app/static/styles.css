@@ -25,6 +25,12 @@
   box-sizing: border-box;
 }
 
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
 html,
 body {
   min-height: 100%;
@@ -72,7 +78,8 @@ h3 {
 .shell {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 1.2rem;
+  padding: clamp(0.9rem, 1.4vw, 1.2rem);
+  overflow-x: clip;
 }
 
 .shell-narrow {
@@ -80,9 +87,10 @@ h3 {
 }
 
 .topbar {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
+  justify-content: space-between;
   gap: 0.8rem;
   border: 1px solid var(--line);
   background: linear-gradient(120deg, rgba(14, 18, 27, 0.9), rgba(18, 24, 36, 0.72));
@@ -129,7 +137,7 @@ h3 {
 
 .pot-logo {
   display: block;
-  width: auto;
+  width: min(190px, 42vw);
   height: 30px;
 }
 
@@ -146,8 +154,10 @@ h3 {
 .navlinks {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.65rem;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .navlinks a {
@@ -156,6 +166,7 @@ h3 {
   border-radius: 999px;
   color: var(--text);
   font-size: 0.86rem;
+  white-space: nowrap;
   transition: border-color var(--motion-fast) var(--easing-soft), color var(--motion-fast) var(--easing-soft), transform var(--motion-fast) var(--easing-soft), background var(--motion-fast) var(--easing-soft);
 }
 
@@ -172,7 +183,7 @@ h3 {
     linear-gradient(130deg, rgba(14, 18, 29, 0.9), rgba(25, 33, 51, 0.72)),
     radial-gradient(80% 100% at 10% 0%, rgba(215, 179, 117, 0.2), transparent 65%);
   color: #fff;
-  padding: 1.45rem;
+  padding: clamp(1rem, 2vw, 1.45rem);
   margin-bottom: 1rem;
   position: relative;
   overflow: hidden;
@@ -235,7 +246,7 @@ h3 {
 .hero-rail {
   margin-top: 0.95rem;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.6rem;
 }
 
@@ -270,13 +281,13 @@ h3 {
 
 .cols-2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
 .cols-3 {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.85rem;
 }
 
@@ -355,6 +366,11 @@ h3 {
   justify-content: space-between;
   align-items: center;
   gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.row > * {
+  min-width: 0;
 }
 
 .small {
@@ -560,7 +576,7 @@ code {
 
 .program-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 0.65rem;
 }
 
@@ -578,7 +594,7 @@ code {
 
 .quality-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.65rem;
 }
 
@@ -617,16 +633,6 @@ code {
   transform: translateY(0) scale(1);
 }
 
-.list-card,
-.match-card,
-.scenario-card,
-.audit-row,
-.program-card,
-.quality-item {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 110px;
-}
-
 @media (hover: hover) and (pointer: fine) {
   .panel:hover {
     transform: translateY(-2px);
@@ -649,6 +655,20 @@ code {
     transform: translateY(-2px);
     border-color: rgba(214, 180, 119, 0.38);
   }
+}
+
+html.layout-compact .brand-caption {
+  display: none;
+}
+
+html.layout-compact .navlinks a {
+  padding: 0.32rem 0.54rem;
+  font-size: 0.8rem;
+}
+
+html.layout-overflow .shell {
+  padding-left: 0.82rem;
+  padding-right: 0.82rem;
 }
 
 @keyframes hero-sheen {
@@ -691,6 +711,26 @@ code {
   }
 }
 
+@media (max-width: 1180px) {
+  .topbar {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .navlinks {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .brand-caption {
+    display: none;
+  }
+
+  .cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
   .cols-2,
   .cols-3,
@@ -707,13 +747,12 @@ code {
   }
 
   .topbar {
-    flex-direction: column;
-    align-items: flex-start;
     gap: 0.55rem;
   }
 
   .pot-logo {
     height: 26px;
+    width: min(170px, 56vw);
   }
 
   .pot-logo-login {

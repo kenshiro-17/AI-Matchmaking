@@ -46,25 +46,47 @@
   revealTargets.forEach((el) => observer.observe(el));
 
   const topbar = document.querySelector(".topbar");
-  if (!topbar) {
-    return;
-  }
-
-  let scheduled = false;
-  const updateTopbar = () => {
-    scheduled = false;
-    topbar.classList.toggle("topbar-scrolled", window.scrollY > 10);
+  const syncLayoutState = () => {
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+    const overflowX = document.documentElement.scrollWidth - document.documentElement.clientWidth > 1;
+    root.classList.toggle("layout-compact", viewportWidth < 1180 || overflowX);
+    root.classList.toggle("layout-overflow", overflowX);
   };
 
-  const onScroll = () => {
-    if (scheduled) {
+  let resizeScheduled = false;
+  const scheduleLayoutSync = () => {
+    if (resizeScheduled) {
       return;
     }
-    scheduled = true;
-    window.requestAnimationFrame(updateTopbar);
+    resizeScheduled = true;
+    window.requestAnimationFrame(() => {
+      resizeScheduled = false;
+      syncLayoutState();
+    });
   };
 
-  window.addEventListener("scroll", onScroll, { passive: true });
-  updateTopbar();
-})();
+  if (topbar) {
+    let scrollScheduled = false;
+    const updateTopbar = () => {
+      scrollScheduled = false;
+      topbar.classList.toggle("topbar-scrolled", window.scrollY > 10);
+    };
 
+    const onScroll = () => {
+      if (scrollScheduled) {
+        return;
+      }
+      scrollScheduled = true;
+      window.requestAnimationFrame(updateTopbar);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    updateTopbar();
+  }
+
+  window.addEventListener("resize", scheduleLayoutSync, { passive: true });
+  window.addEventListener("orientationchange", scheduleLayoutSync, { passive: true });
+  window.setTimeout(syncLayoutState, 0);
+  window.setTimeout(syncLayoutState, 150);
+  syncLayoutState();
+})();
