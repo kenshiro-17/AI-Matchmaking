@@ -1,40 +1,86 @@
 # Proof of Talk AI Matchmaking
 
-Quality-first matchmaking web app built for the Proof of Talk case study.
+Quality-first matchmaking web app for curated summit networking.
 
-The system is designed for curated, high-value intros (not mass networking): each attendee gets a small set of high-confidence matches with plain-English reasons.
+This system is built for high-stakes events where conversation quality matters more than meeting volume.
 
-## What This App Does
+## What It Does
 
-- Builds rich attendee profiles from structured and optional external signals
-- Generates matches with a strict quality bar:
-  - only `score > 65`
-  - target `3-7` recommendations per attendee (when available)
-- Explains every match in plain language
-- Supports intro workflow (request, accept/decline)
-- Collects feedback and improves future ranking
-- Surfaces strategic scenarios (pair and triad opportunities)
-- Provides organizer workflows (add attendees, review/export results)
-- Enforces role-based access (organizer vs attendee)
+- Recommends high-confidence matches only (`score > 65`)
+- Targets `3-7` matches per attendee (when available)
+- Explains every match in plain English
+- Supports intro requests (double opt-in style flow)
+- Learns from feedback and outcomes
+- Surfaces strategic pair + triad opportunities
+- Provides organizer console (add attendees, view metrics, export CSV)
+- Includes role-based authentication and security controls
+
+## Latest Updates
+
+- Premium UI polish with lightweight motion system (`/static/ui.js`)
+- Responsive spacing and resize stability fixes across device classes
+- Proof of Talk branding integrated with local static logo asset
+- Favicon added for browser tabs (`/static/brand/favicon.svg`)
+- GZip response compression enabled
+- Live cross-viewport QA done (mobile, tablet, laptop, desktop, big monitor)
 
 ## Tech Stack
 
-- Backend: FastAPI
-- Templates/UI: Jinja2 + CSS
-- Database: SQLite for local demo, Postgres-ready via `DATABASE_URL`
-- Auth: session cookie + CSRF protection + role checks
+- FastAPI
+- Jinja2 templates + CSS
+- SQLAlchemy
+- SQLite for local/demo
+- Postgres-ready via `DATABASE_URL`
 
-## Quick Start (Local)
+## Quick Start (New Machine)
+
+### 1) Prerequisites
+
+- Python `3.12`
+- `pip`
+- Git
+
+Optional:
+- Docker + Docker Compose
+
+### 2) Clone
 
 ```bash
-python -m pip install --user -r requirements.txt
+git clone https://github.com/kenshiro-17/AI-Matchmaking.git
+cd AI-Matchmaking
+```
+
+### 3) Create and activate virtual environment
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+```
+
+### 4) Install dependencies
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+### 5) Configure environment
+
+```bash
+cp .env.example .env
+```
+
+For local dev, you can keep defaults and run seeded demo data.
+
+### 6) Seed demo data and start app
+
+```bash
 python scripts/seed_data.py
 python scripts/generate_level2_artifacts.py
 python -m uvicorn app.main:app --reload
 ```
 
 Open:
-- `http://127.0.0.1:8000`
 - `http://127.0.0.1:8000/login`
 - `http://127.0.0.1:8000/organizer`
 
@@ -44,16 +90,22 @@ Open:
   - email: `organizer@pot.local`
   - password: `organizer123`
 - Attendee:
-  - attendee ID: `1` (or any seeded attendee id)
+  - attendee ID: `1` (or any seeded attendee ID)
   - passcode: `attendee123-<attendee_id>` (example: `attendee123-1`)
 
-Override with environment variables:
-- `ORGANIZER_EMAIL`
-- `ORGANIZER_PASSWORD`
-- `ATTENDEE_BOOTSTRAP_PASSWORD`
-- `AUTH_SECRET`
+## Local Verification
 
-## Core API Endpoints
+```bash
+python -m pytest -q
+```
+
+Health check:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+## API Endpoints
 
 - `GET /v1/matches/{attendee_id}`
 - `POST /v1/feedback`
@@ -64,61 +116,34 @@ Override with environment variables:
 - `POST /v1/enrich/company`
 - `GET /health`
 
-Note:
-- API routes require login
-- State-changing routes require CSRF token header `X-CSRF-Token`
+Notes:
+- API routes require authenticated session
+- State-changing routes require CSRF token (`X-CSRF-Token`)
 
-## Configuration
+## Security Controls
 
-### Required for production
+- Signed auth cookies
+- CSRF validation
+- Role-based access control (organizer vs attendee)
+- Login lockout and rate limiting
+- Secure headers and host checks
+- SSRF protection for enrichment source URLs
+- Audit logging for sensitive actions
 
-- `APP_ENV=production`
-- `AUTH_SECRET` (strong random secret)
-- `ORGANIZER_PASSWORD` (strong password)
-- `COOKIE_SECURE=true`
-- `FORCE_HTTPS=true`
-- `ALLOWED_HOSTS=<your-domain>`
-- `DATABASE_URL=<postgres-url>`
+## Performance and Scale Notes
 
-### Optional tuning
-
-- `HOME_PAGE_SIZE` (default `80`)
-- `ORGANIZER_PAGE_SIZE` (default `100`)
-- `SEED_ON_STARTUP=false`
-
-## Security Controls Implemented
-
-- Signed session cookies
-- CSRF protection on mutating routes
-- Role-based route protection
-- Login lockout / brute-force throttling
-- Rate limiting
-- Secure headers and host validation
-- SSRF protections in enrichment logic
-- Audit logging for sensitive organizer actions
-
-## Scaling Notes (2,500 Attendees Target)
-
-- Query patterns optimized to avoid per-candidate DB loops
-- Candidate hydration batched (no N+1 on match views)
-- Scenario generation bounded to avoid combinatorial blowups
-- Paginated organizer and attendee list views
-
-Benchmark script:
+- Query optimization to avoid per-candidate feedback DB loops
+- Batched candidate hydration (avoids N+1 patterns)
+- Bounded scenario generation (prevents combinatorial blowups)
+- Pagination on attendee-heavy views
+- GZip middleware enabled
+- Synthetic benchmark script for 2,500 attendees:
 
 ```bash
 python scripts/benchmark_2500.py
 ```
 
-## Test
-
-```bash
-python -m pytest -q
-```
-
-## Deployment
-
-### Docker
+## Docker Run
 
 ```bash
 cp .env.example .env
@@ -126,23 +151,34 @@ docker compose --env-file .env build
 docker compose --env-file .env up -d
 ```
 
-Docs:
-- `docs/deployment/Production_Deployment_Runbook.md`
+## Deploy on Vercel
+
+This repo includes `vercel.json` and `main.py` entrypoint (`app` export).
+
+Required production env vars:
+
+- `APP_ENV=production`
+- `DATABASE_URL=<managed-postgres-url>`
+- `AUTH_SECRET=<strong-random-secret>`
+- `ORGANIZER_EMAIL=<email>`
+- `ORGANIZER_PASSWORD=<strong-password>`
+- `ATTENDEE_BOOTSTRAP_PASSWORD=<strong-password>`
+- `COOKIE_SECURE=true`
+- `FORCE_HTTPS=true`
+- `TRUST_PROXY_HEADERS=true`
+- `ALLOWED_HOSTS=<your-domain>,*.vercel.app`
+- `SEED_ON_STARTUP=false`
+
+Detailed guide:
 - `docs/deployment/Vercel_Deployment.md`
 
-### Vercel
+## Project Structure
 
-Entrypoint: `main.py` (exports `app`).
-
-Use managed Postgres in production. Do not rely on local disk for persistent data.
-
-## Repository Layout
-
-- `app/` FastAPI app, services, templates, static assets
-- `scripts/` seed/benchmark/generation scripts
+- `app/` application code (routes, services, templates, static files)
+- `scripts/` seed, benchmark, and artifact generation scripts
 - `tests/` automated tests
-- `docs/` case study and deployment docs
-- `data/seed/` sample attendee seed data
+- `docs/` case-study and deployment docs
+- `data/seed/` sample attendee seed dataset
 
 ## Submission Artifacts
 
