@@ -48,7 +48,7 @@ Optional:
 ### 2) Clone
 
 ```bash
-git clone https://github.com/kenshiro-17/AI-Matchmaking.git
+git clone <your-repository-url>
 cd AI-Matchmaking
 ```
 
