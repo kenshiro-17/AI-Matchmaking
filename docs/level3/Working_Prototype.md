@@ -18,7 +18,9 @@ This working prototype is configured with a strict quality-over-quantity policy:
 - Generated sample input/output artifacts for 12 fictional attendees.
 - Double-opt-in intro workflow is active.
 - Organizer can input attendees and export CSV recommendations.
+- Organizer can delete attendees with typed-name confirmation; related attendee-scoped records are removed in one action.
 - External source enrichment is available via company website endpoint.
+- LinkedIn enrichment is available with explicit attendee opt-in (checkbox + profile URL).
 - Containerized deployment assets added (`Dockerfile`, `docker-compose.yml`, `.env.example`).
 - Scalability guards added for 2,500-attendee operation:
   - bounded scenario generation,
@@ -40,6 +42,7 @@ This working prototype is configured with a strict quality-over-quantity policy:
 - `POST /v1/intros`
 - `POST /v1/intros/{intro_id}`
 - `POST /v1/enrich/company`
+- `POST /v1/enrich/linkedin`
 - `GET /v1/organizer/metrics`
 - `GET /v1/scenarios`
 - `GET /v1/scenarios?attendee_id=<id>`
@@ -51,6 +54,7 @@ This working prototype is configured with a strict quality-over-quantity policy:
 - `GET /` (role-aware landing)
 - `GET /attendees/{id}` (attendee workspace, role-scoped)
 - `GET /organizer` (organizer workspace)
+- `POST /organizer/attendees/{id}/delete` (organizer-only, CSRF + confirmation gated)
 
 ## Why this improves quality
 - Prevents weak “just in case” recommendations.
@@ -62,4 +66,7 @@ Security reference document:
 - `/docs/security/Security_Hardening_Plan_and_Implementation.md`
 
 Current deployed URL:
-- `https://ai-matchmaking-pot.vercel.app`
+- [https://ai-matchmaking-pot.vercel.app](https://ai-matchmaking-pot.vercel.app)
+
+Primary wireframe (Figma):
+- [Proof of Talk Pitch Board v5](https://www.figma.com/online-whiteboard/create-diagram/f832226c-9b28-4c38-be43-8b4ada8f4d64?utm_source=other&utm_content=edit_in_figjam&oai_id=&request_id=55701c3a-ed32-408d-90b0-bb827b8e79fd)

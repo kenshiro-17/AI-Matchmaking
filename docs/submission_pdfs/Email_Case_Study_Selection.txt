@@ -1,0 +1,17 @@
+Subject: Proof of Talk Internship Case Study Selection - Case Study 3
+
+Hi XVentures Team,
+
+Thank you for sharing the case studies.
+
+I would like to proceed with **Case Study 3: “Design an AI-powered matchmaking tool for Proof of Talk.”**
+
+I’m particularly interested in this case because it sits at the intersection of product strategy, intelligent recommendation systems, and high-trust event operations, which aligns closely with my current work and interests.
+
+I’m attaching my submission package including:
+- Level 2: Proof of Concept
+- Security Hardening Plan and Implementation
+- Level 3: Working Prototype
+
+Best regards,
+Rahul

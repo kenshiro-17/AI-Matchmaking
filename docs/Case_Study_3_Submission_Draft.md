@@ -196,7 +196,9 @@ This strengthens Proof of Talk’s perceived and measurable event value.
 - Generated sample input/output, including strategic scenarios.
 - Working web app with attendee workflow + organizer workspace.
 - Organizer attendee input form and CSV export for match recommendations.
+- Organizer attendee deletion flow with explicit typed-name confirmation.
 - External data retrieval from one source (company website enrichment endpoint).
+- Explicit LinkedIn opt-in enrichment flow (checkbox + profile URL; no hidden scraping).
 - Production-grade presentation layer improvements:
   - Proof of Talk branding integration (local static logo),
   - browser favicon support,
@@ -247,6 +249,7 @@ This strengthens Proof of Talk’s perceived and measurable event value.
 - Working app endpoints include:
 - `GET /v1/matches/{attendee_id}`
 - `POST /v1/enrich/company`
+- `POST /v1/enrich/linkedin`
 - `GET /organizer/export/matches.csv`
 - `GET /v1/scenarios`
 - `GET /favicon.ico` (brand icon support)

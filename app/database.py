@@ -27,6 +27,25 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, expi
 Base = declarative_base()
 
 
+def ensure_schema_compat():
+    """Best-effort SQLite schema compatibility for additive columns."""
+    if not DATABASE_URL.startswith("sqlite"):
+        return
+    with engine.begin() as conn:
+        cols = {
+            row[1]
+            for row in conn.exec_driver_sql("PRAGMA table_info(attendees)").fetchall()
+        }
+        if "linkedin_opt_in" not in cols:
+            conn.exec_driver_sql(
+                "ALTER TABLE attendees ADD COLUMN linkedin_opt_in INTEGER NOT NULL DEFAULT 0"
+            )
+        if "linkedin_url" not in cols:
+            conn.exec_driver_sql(
+                "ALTER TABLE attendees ADD COLUMN linkedin_url VARCHAR(280) NOT NULL DEFAULT ''"
+            )
+
+
 def get_db():
     db = SessionLocal()
     try:

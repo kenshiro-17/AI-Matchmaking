@@ -20,6 +20,7 @@ This hardening plan was based on primary guidance from OWASP, NIST, and framewor
 4. SSRF protection
 - Restrict URL schemes and destination networks.
 - Block localhost/private/reserved IP resolution.
+- Restrict LinkedIn enrichment to explicit `linkedin.com` profile URLs when opt-in is enabled.
 
 5. Security headers
 - Add CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy.
@@ -28,6 +29,7 @@ This hardening plan was based on primary guidance from OWASP, NIST, and framewor
 6. Access control
 - Enforce server-side RBAC checks for every sensitive route/API.
 - Avoid client-side-only authorization.
+- Gate destructive organizer actions (attendee deletion) behind explicit typed confirmation.
 
 7. Auditability
 - Log security-relevant actions (login, denied actions, enrichment attempts, exports, admin operations).
@@ -119,6 +121,7 @@ Files:
 - Blocks private/loopback/link-local/reserved/multicast targets.
 - Redirect hops are validated and bounded.
 - HTML response size is bounded to prevent memory abuse.
+- LinkedIn enrichment allows only `linkedin.com` profile URLs (`/in/...`) and requires attendee opt-in.
 
 Files:
 - `app/services/external_enrichment.py`
@@ -143,7 +146,7 @@ Files:
 
 ### Audit logging
 - Added `AuditLog` table.
-- Logs login outcomes, feedback writes, intro actions, attendee creation, enrichment attempts, and exports.
+- Logs login outcomes, feedback writes, intro actions, attendee creation/deletion, enrichment attempts, and exports.
 - Added organizer audit view.
 
 Files:
@@ -167,7 +170,7 @@ Files:
 - `LOCKOUT_SECONDS`
 
 ## 6) Validation Performed
-- Existing tests still pass (`6 passed`).
+- Existing tests still pass (`9 passed`).
 - Verified:
   - unauthenticated API access is denied,
   - role restrictions are enforced,

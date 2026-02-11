@@ -4,17 +4,19 @@ import os
 import re
 import time
 from pathlib import Path
+from urllib.parse import quote_plus
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from app.database import Base, SessionLocal, engine, get_db
+from app.database import Base, SessionLocal, engine, ensure_schema_compat, get_db
 from app.models import AppUser, Attendee, AuditLog, ExternalSignal, Feedback, IntroRequest, MatchResult
 from app.schemas import (
     AttendeeCreate,
@@ -25,7 +27,7 @@ from app.schemas import (
 )
 from app.services.audit import write_audit_log
 from app.services.bootstrap import seed_demo_data_if_empty
-from app.services.external_enrichment import extract_company_summary
+from app.services.external_enrichment import extract_company_summary, extract_linkedin_summary
 from app.services.intro import create_intro_request, update_intro_request
 from app.services.matching import (
     MAX_MATCHES,
@@ -52,6 +54,7 @@ from app.services.security import (
 
 app = FastAPI(title="Proof of Talk Matchmaking Prototype", version="0.5.0")
 Base.metadata.create_all(bind=engine)
+ensure_schema_compat()
 app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
@@ -296,6 +299,13 @@ def validate_password_or_blank(value: str, field: str = "password") -> str:
     return cleaned
 
 
+def parse_opt_in(value: str | bool | None) -> bool:
+    if isinstance(value, bool):
+        return value
+    cleaned = (value or "").strip().lower()
+    return cleaned in {"1", "true", "yes", "on"}
+
+
 def parse_page(value: str | None, default: int = 1) -> int:
     try:
         parsed = int(value or default)
@@ -310,6 +320,47 @@ def parse_page_size(value: str | None, default: int, min_size: int = 10, max_siz
     except (TypeError, ValueError):
         return default
     return min(max(parsed, min_size), max_size)
+
+
+def delete_attendee_relations(db: Session, attendee_id: int) -> dict[str, int]:
+    feedback_deleted = (
+        db.query(Feedback)
+        .filter(or_(Feedback.attendee_id == attendee_id, Feedback.candidate_id == attendee_id))
+        .delete(synchronize_session=False)
+    )
+    match_deleted = (
+        db.query(MatchResult)
+        .filter(or_(MatchResult.attendee_id == attendee_id, MatchResult.candidate_id == attendee_id))
+        .delete(synchronize_session=False)
+    )
+    intro_deleted = (
+        db.query(IntroRequest)
+        .filter(or_(IntroRequest.requester_id == attendee_id, IntroRequest.candidate_id == attendee_id))
+        .delete(synchronize_session=False)
+    )
+    signal_deleted = (
+        db.query(ExternalSignal)
+        .filter(ExternalSignal.attendee_id == attendee_id)
+        .delete(synchronize_session=False)
+    )
+    user_deleted = (
+        db.query(AppUser)
+        .filter(AppUser.attendee_id == attendee_id, AppUser.role == "attendee")
+        .delete(synchronize_session=False)
+    )
+    attendee_deleted = (
+        db.query(Attendee)
+        .filter(Attendee.id == attendee_id)
+        .delete(synchronize_session=False)
+    )
+    return {
+        "feedback": int(feedback_deleted or 0),
+        "matches": int(match_deleted or 0),
+        "intros": int(intro_deleted or 0),
+        "signals": int(signal_deleted or 0),
+        "users": int(user_deleted or 0),
+        "attendees": int(attendee_deleted or 0),
+    }
 
 
 @app.middleware("http")
@@ -508,6 +559,8 @@ def organizer_view(request: Request, db: Session = Depends(get_db)):
 
     page = parse_page(request.query_params.get("page"), default=1)
     page_size = parse_page_size(request.query_params.get("page_size"), default=ORGANIZER_PAGE_SIZE)
+    confirm_delete_id_raw = request.query_params.get("confirm_delete")
+    confirm_delete_id = int(confirm_delete_id_raw) if (confirm_delete_id_raw and confirm_delete_id_raw.isdigit()) else 0
     total_attendees = db.query(Attendee).count()
     total_pages = max(1, (total_attendees + page_size - 1) // page_size)
     page = min(page, total_pages)
@@ -521,6 +574,9 @@ def organizer_view(request: Request, db: Session = Depends(get_db)):
     )
     metrics = organizer_metrics(db)
     message = request.query_params.get("message", "")
+    confirm_attendee = None
+    if confirm_delete_id > 0:
+        confirm_attendee = db.query(Attendee).filter(Attendee.id == confirm_delete_id).first()
     return templates.TemplateResponse(
         request=request,
         name="organizer.html",
@@ -528,6 +584,7 @@ def organizer_view(request: Request, db: Session = Depends(get_db)):
             "attendees": attendees,
             "metrics": metrics,
             "message": message,
+            "confirm_attendee": confirm_attendee,
             "user": current_user(request),
             "csrf_token": request.cookies.get(CSRF_COOKIE, ""),
             "page": page,
@@ -672,6 +729,8 @@ def create_attendee_form(
     seek_text: str = Form(""),
     offer_text: str = Form(""),
     focus_text: str = Form(""),
+    linkedin_opt_in: str = Form(""),
+    linkedin_url: str = Form(""),
     login_email: str = Form(""),
     temp_password: str = Form(""),
     db: Session = Depends(get_db),
@@ -685,6 +744,12 @@ def create_attendee_form(
     user = current_user(request)
     safe_email = validate_email_or_blank(login_email, "login_email")
     safe_password = validate_password_or_blank(temp_password, "temp_password")
+    safe_linkedin_opt_in = parse_opt_in(linkedin_opt_in)
+    safe_linkedin_url = validate_text(linkedin_url, "linkedin_url", 280)
+    if safe_linkedin_opt_in and not safe_linkedin_url:
+        raise HTTPException(status_code=400, detail="linkedin_url is required when linkedin_opt_in is enabled")
+    if not safe_linkedin_opt_in:
+        safe_linkedin_url = ""
     if (safe_email and not safe_password) or (safe_password and not safe_email):
         raise HTTPException(status_code=400, detail="login_email and temp_password must be set together")
     if APP_ENV in {"prod", "production"} and not safe_password:
@@ -701,6 +766,8 @@ def create_attendee_form(
         seek_text=validate_text(seek_text, "seek_text", 800),
         offer_text=validate_text(offer_text, "offer_text", 800),
         focus_text=validate_text(focus_text, "focus_text", 800),
+        linkedin_opt_in=safe_linkedin_opt_in,
+        linkedin_url=safe_linkedin_url,
     )
     db.add(row)
     db.commit()
@@ -711,9 +778,46 @@ def create_attendee_form(
         email=safe_email or None,
         raw_password=safe_password or None,
     )
-    write_audit_log(db, user, "create_attendee", "attendee", str(row.id), "success", {})
+    write_audit_log(db, user, "create_attendee", "attendee", str(row.id), "success", {
+        "linkedin_opt_in": safe_linkedin_opt_in
+    })
+    message = f"Attendee created (id={row.id}, login={attendee_user.email})"
+    if safe_linkedin_opt_in and safe_linkedin_url:
+        try:
+            linkedin_summary = extract_linkedin_summary(safe_linkedin_url)
+            db.add(
+                ExternalSignal(
+                    attendee_id=row.id,
+                    source="linkedin_profile",
+                    source_url=safe_linkedin_url,
+                    extracted_summary=linkedin_summary,
+                )
+            )
+            row.focus_text = f"{row.focus_text} {linkedin_summary[:500]}".strip()
+            db.commit()
+            write_audit_log(
+                db,
+                user,
+                "run_linkedin_enrichment",
+                "attendee",
+                str(row.id),
+                "success",
+                {"source_url": safe_linkedin_url},
+            )
+            message += ", LinkedIn enrichment completed"
+        except Exception as exc:
+            write_audit_log(
+                db,
+                user,
+                "run_linkedin_enrichment",
+                "attendee",
+                str(row.id),
+                "failed",
+                {"error": str(exc)[:120], "source_url": safe_linkedin_url},
+            )
+            message += f", LinkedIn enrichment failed: {str(exc)[:80]}"
     return RedirectResponse(
-        url=f"/organizer?message=Attendee+created+(id={row.id},+login={attendee_user.email})",
+        url=f"/organizer?message={quote_plus(message)}",
         status_code=303,
     )
 
@@ -760,6 +864,73 @@ def enrich_attendee_form(
         db, user, "run_enrichment", "attendee", str(attendee.id), "success", {"source_url": safe_source_url}
     )
     return RedirectResponse(url="/organizer?message=Enrichment+completed", status_code=303)
+
+
+@app.post("/organizer/attendees/{attendee_id}/delete")
+def delete_attendee_form(
+    attendee_id: int,
+    request: Request,
+    csrf_token: str = Form(""),
+    confirm_name: str = Form(""),
+    page: int = Form(1),
+    page_size: int = Form(ORGANIZER_PAGE_SIZE),
+    db: Session = Depends(get_db),
+):
+    auth = require_organizer(request)
+    if auth:
+        return auth
+    check_rate_limit(request, "attendee_delete_form", limit=20, period_seconds=60)
+    require_csrf_form(request, csrf_token)
+
+    user = current_user(request)
+    attendee = db.query(Attendee).filter(Attendee.id == attendee_id).first()
+    if not attendee:
+        write_audit_log(
+            db, user, "delete_attendee", "attendee", str(attendee_id), "denied", {"reason": "not_found"}
+        )
+        msg = "Delete failed: attendee not found"
+        return RedirectResponse(
+            url=f"/organizer?page={max(1, page)}&page_size={page_size}&message={quote_plus(msg)}",
+            status_code=303,
+        )
+
+    safe_confirm_name = validate_text(confirm_name, "confirm_name", 120)
+    if safe_confirm_name.lower() != attendee.name.lower():
+        write_audit_log(
+            db,
+            user,
+            "delete_attendee",
+            "attendee",
+            str(attendee_id),
+            "denied",
+            {"reason": "confirmation_mismatch"},
+        )
+        msg = "Delete blocked: confirmation name mismatch"
+        return RedirectResponse(
+            url=(
+                f"/organizer?confirm_delete={attendee_id}&page={max(1, page)}&page_size={page_size}"
+                f"&message={quote_plus(msg)}"
+            ),
+            status_code=303,
+        )
+
+    attendee_name = attendee.name
+    counts = delete_attendee_relations(db, attendee_id)
+    db.commit()
+    write_audit_log(
+        db,
+        user,
+        "delete_attendee",
+        "attendee",
+        str(attendee_id),
+        "success",
+        counts,
+    )
+    msg = f"Attendee deleted: {attendee_name} (id={attendee_id})"
+    return RedirectResponse(
+        url=f"/organizer?page={max(1, page)}&page_size={page_size}&message={quote_plus(msg)}",
+        status_code=303,
+    )
 
 
 @app.post("/intros/request")
@@ -829,12 +1000,42 @@ def create_attendee(payload: AttendeeCreate, request: Request, db: Session = Dep
         write_audit_log(db, user, "api_create_attendee", "attendee", "", "denied", {})
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    row = Attendee(**payload.model_dump())
+    linkedin_opt_in = parse_opt_in(payload.linkedin_opt_in)
+    linkedin_url = validate_text(payload.linkedin_url, "linkedin_url", 280)
+    if linkedin_opt_in and not linkedin_url:
+        raise HTTPException(status_code=400, detail="linkedin_url is required when linkedin_opt_in is enabled")
+    if not linkedin_opt_in:
+        linkedin_url = ""
+
+    data = payload.model_dump()
+    data["linkedin_opt_in"] = linkedin_opt_in
+    data["linkedin_url"] = linkedin_url
+    row = Attendee(**data)
     db.add(row)
     db.commit()
     db.refresh(row)
     ensure_attendee_user(db, row)
-    write_audit_log(db, user, "api_create_attendee", "attendee", str(row.id), "success", {})
+    write_audit_log(db, user, "api_create_attendee", "attendee", str(row.id), "success", {"linkedin_opt_in": linkedin_opt_in})
+    if linkedin_opt_in and linkedin_url:
+        try:
+            linkedin_summary = extract_linkedin_summary(linkedin_url)
+            db.add(
+                ExternalSignal(
+                    attendee_id=row.id,
+                    source="linkedin_profile",
+                    source_url=linkedin_url,
+                    extracted_summary=linkedin_summary,
+                )
+            )
+            row.focus_text = f"{row.focus_text} {linkedin_summary[:500]}".strip()
+            db.commit()
+            write_audit_log(
+                db, user, "api_linkedin_enrich", "attendee", str(row.id), "success", {"source_url": linkedin_url}
+            )
+        except Exception as exc:
+            write_audit_log(
+                db, user, "api_linkedin_enrich", "attendee", str(row.id), "failed", {"error": str(exc)[:120]}
+            )
     return {"id": row.id, "login_email": f"attendee-{row.id}@pot.local"}
 
 
@@ -963,6 +1164,48 @@ def api_company_enrichment(attendee_id: int, source_url: str, request: Request, 
     db.commit()
     write_audit_log(
         db, user, "api_enrich", "attendee", str(attendee.id), "success", {"source_url": safe_source_url}
+    )
+    return {"attendee_id": attendee.id, "source_url": safe_source_url, "summary": summary[:500]}
+
+
+@app.post("/v1/enrich/linkedin")
+def api_linkedin_enrichment(attendee_id: int, source_url: str, request: Request, db: Session = Depends(get_db)):
+    user = api_user_or_401(request)
+    require_csrf_api(request)
+    check_rate_limit(request, "api_enrich_linkedin", limit=10, period_seconds=60)
+    if not has_permission(user, "run_enrichment"):
+        write_audit_log(db, user, "api_enrich_linkedin", "attendee", str(attendee_id), "denied", {})
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    attendee = db.query(Attendee).filter(Attendee.id == attendee_id).first()
+    if not attendee:
+        raise HTTPException(status_code=404, detail="Attendee not found")
+    if not attendee.linkedin_opt_in:
+        write_audit_log(
+            db, user, "api_enrich_linkedin", "attendee", str(attendee_id), "denied", {"reason": "opt_in_required"}
+        )
+        raise HTTPException(status_code=400, detail="Attendee has not opted in to LinkedIn enrichment")
+
+    try:
+        safe_source_url = validate_text(source_url, "source_url", 280)
+        summary = extract_linkedin_summary(safe_source_url)
+    except Exception as exc:
+        write_audit_log(db, user, "api_enrich_linkedin", "attendee", str(attendee_id), "failed", {"error": str(exc)[:120]})
+        raise HTTPException(status_code=400, detail=f"LinkedIn enrichment failed: {exc}") from exc
+
+    attendee.linkedin_url = safe_source_url
+    db.add(
+        ExternalSignal(
+            attendee_id=attendee.id,
+            source="linkedin_profile",
+            source_url=safe_source_url,
+            extracted_summary=summary,
+        )
+    )
+    attendee.focus_text = f"{attendee.focus_text} {summary[:500]}".strip()
+    db.commit()
+    write_audit_log(
+        db, user, "api_enrich_linkedin", "attendee", str(attendee.id), "success", {"source_url": safe_source_url}
     )
     return {"attendee_id": attendee.id, "source_url": safe_source_url, "summary": summary[:500]}
 

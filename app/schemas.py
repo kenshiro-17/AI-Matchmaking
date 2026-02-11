@@ -14,6 +14,8 @@ class AttendeeCreate(BaseModel):
     focus_text: str = Field(default="", max_length=800)
     seek_text: str = Field(default="", max_length=800)
     offer_text: str = Field(default="", max_length=800)
+    linkedin_opt_in: bool = False
+    linkedin_url: str = Field(default="", max_length=280)
     seed_confidence: float = 0.7
 
 

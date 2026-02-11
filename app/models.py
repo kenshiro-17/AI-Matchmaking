@@ -20,6 +20,8 @@ class Attendee(Base):
     focus_text: Mapped[str] = mapped_column(Text, default="")
     seek_text: Mapped[str] = mapped_column(Text, default="")
     offer_text: Mapped[str] = mapped_column(Text, default="")
+    linkedin_opt_in: Mapped[bool] = mapped_column(Boolean, default=False)
+    linkedin_url: Mapped[str] = mapped_column(String(280), default="")
     seed_confidence: Mapped[float] = mapped_column(Float, default=0.7)
 
 class MatchResult(Base):

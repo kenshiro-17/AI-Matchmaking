@@ -472,6 +472,12 @@ h3 {
   color: #e6f3ff;
 }
 
+.btn-danger {
+  border-color: rgba(255, 159, 159, 0.6);
+  background: linear-gradient(115deg, rgba(110, 36, 36, 0.92), rgba(166, 58, 58, 0.9));
+  color: #fff1f1;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -7,6 +7,7 @@ import httpx
 
 MAX_HTML_BYTES = 1_500_000
 MAX_REDIRECTS = 3
+LINKEDIN_ALLOWED_HOSTS = {"linkedin.com", "www.linkedin.com"}
 
 
 def _collapse(text: str) -> str:
@@ -37,6 +38,17 @@ def _validate_public_https_url(url: str):
     return parsed
 
 
+def _validate_linkedin_profile_url(url: str):
+    parsed = _validate_public_https_url(url)
+    host = (parsed.hostname or "").lower()
+    if host not in LINKEDIN_ALLOWED_HOSTS:
+        raise ValueError("LinkedIn URL must be on linkedin.com")
+    path = parsed.path or ""
+    if not path.startswith("/in/"):
+        raise ValueError("LinkedIn URL must be a profile URL (https://www.linkedin.com/in/...)")
+    return parsed
+
+
 def _fetch_limited_html(client: httpx.Client, url: str) -> str:
     current_url = url
     for _ in range(MAX_REDIRECTS + 1):
@@ -64,25 +76,42 @@ def _fetch_limited_html(client: httpx.Client, url: str) -> str:
     raise ValueError("Too many redirects")
 
 
-def extract_company_summary(url: str, timeout: float = 6.0) -> str:
-    _validate_public_https_url(url)
-    with httpx.Client(timeout=timeout, follow_redirects=False) as client:
-        html = _fetch_limited_html(client, url)
-
+def _extract_summary_from_html(html: str) -> str:
     title_match = re.search(r"<title[^>]*>(.*?)</title>", html, flags=re.IGNORECASE | re.DOTALL)
     title = _collapse(title_match.group(1)) if title_match else ""
 
-    meta_match = re.search(
+    meta_desc_match = re.search(
         r'<meta[^>]+name=[\"\']description[\"\'][^>]+content=[\"\'](.*?)[\"\']',
         html,
         flags=re.IGNORECASE | re.DOTALL,
     )
-    meta_desc = _collapse(meta_match.group(1)) if meta_match else ""
+    meta_desc = _collapse(meta_desc_match.group(1)) if meta_desc_match else ""
+
+    og_desc_match = re.search(
+        r'<meta[^>]+property=[\"\']og:description[\"\'][^>]+content=[\"\'](.*?)[\"\']',
+        html,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    og_desc = _collapse(og_desc_match.group(1)) if og_desc_match else ""
 
     body_text = re.sub(r"<script.*?>.*?</script>", " ", html, flags=re.IGNORECASE | re.DOTALL)
     body_text = re.sub(r"<style.*?>.*?</style>", " ", body_text, flags=re.IGNORECASE | re.DOTALL)
     body_text = re.sub(r"<[^>]+>", " ", body_text)
     body_text = _collapse(body_text)[:800]
 
-    parts = [part for part in [title, meta_desc, body_text] if part]
+    parts = [part for part in [title, meta_desc, og_desc, body_text] if part]
     return " | ".join(parts)[:1500]
+
+
+def extract_company_summary(url: str, timeout: float = 6.0) -> str:
+    _validate_public_https_url(url)
+    with httpx.Client(timeout=timeout, follow_redirects=False) as client:
+        html = _fetch_limited_html(client, url)
+    return _extract_summary_from_html(html)
+
+
+def extract_linkedin_summary(url: str, timeout: float = 6.0) -> str:
+    _validate_linkedin_profile_url(url)
+    with httpx.Client(timeout=timeout, follow_redirects=False) as client:
+        html = _fetch_limited_html(client, url)
+    return _extract_summary_from_html(html)

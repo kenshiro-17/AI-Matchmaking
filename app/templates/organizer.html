@@ -46,6 +46,27 @@
       </section>
       {% endif %}
 
+      {% if confirm_attendee %}
+      <section class="panel">
+        <div class="note">
+          <strong>Confirm Deletion:</strong> This will remove attendee <code>#{{ confirm_attendee.id }} {{ confirm_attendee.name }}</code> and related matches, feedback, intro requests, enrichment signals, and attendee login account.
+        </div>
+        <form action="/organizer/attendees/{{ confirm_attendee.id }}/delete" method="post" class="form-grid" style="margin-top:0.8rem;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <input type="hidden" name="page" value="{{ page }}" />
+          <input type="hidden" name="page_size" value="{{ page_size }}" />
+          <div class="full-row">
+            <label>Type attendee name to confirm deletion</label>
+            <input name="confirm_name" placeholder="{{ confirm_attendee.name }}" required />
+          </div>
+          <div class="actions full-row">
+            <button class="btn btn-danger" type="submit">Delete Attendee Permanently</button>
+            <a class="btn" href="/organizer?page={{ page }}&page_size={{ page_size }}">Cancel</a>
+          </div>
+        </form>
+      </section>
+      {% endif %}
+
       <section class="panel panel-elevated">
         <p class="section-kicker">Performance Snapshot</p>
         <h2>Snapshot</h2>
@@ -80,13 +101,15 @@
             <div><label>Focus Text</label><input name="focus_text" /></div>
             <div><label>Seek Text</label><input name="seek_text" /></div>
             <div><label>Offer Text</label><input name="offer_text" /></div>
+            <div class="full-row"><label><input type="checkbox" name="linkedin_opt_in" value="on" /> LinkedIn Enrichment Opt-In</label></div>
+            <div class="full-row"><label>LinkedIn Profile URL (required if opted in)</label><input name="linkedin_url" type="url" placeholder="https://www.linkedin.com/in/username" /></div>
             <div><label>Login Email (optional)</label><input name="login_email" type="email" placeholder="exec@company.com" /></div>
             <div><label>Temporary Password (optional)</label><input name="temp_password" type="password" placeholder="Strong temp password" /></div>
             <div class="actions full-row">
               <button class="btn btn-primary" type="submit">Create Attendee</button>
             </div>
           </form>
-          <p class="small note-subtle">If no custom credentials are set, the app creates <code>attendee-&lt;id&gt;@pot.local</code> with passcode <code>attendee123-&lt;id&gt;</code>.</p>
+          <p class="small note-subtle">If no custom credentials are set, the app creates <code>attendee-&lt;id&gt;@pot.local</code> with passcode <code>attendee123-&lt;id&gt;</code>. LinkedIn lookup is run only when opt-in is enabled.</p>
         </article>
 
         <article class="panel panel-elevated">
@@ -117,6 +140,9 @@
                 <span class="badge">{{ attendee.primary_goal }}</span>
               </div>
               <div class="small">{{ attendee.role }} · {{ attendee.company }}</div>
+              <div class="actions">
+                <a class="btn" href="/organizer?confirm_delete={{ attendee.id }}&page={{ page }}&page_size={{ page_size }}">Delete</a>
+              </div>
             </li>
             {% endfor %}
           </ul>
