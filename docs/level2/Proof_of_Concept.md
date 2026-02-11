@@ -1,37 +1,32 @@
-# Level 2 Proof of Concept
+# Level 2: Wireframe + Proof of Concept
 
-## Deliverables
-- Concept document: `/docs/Case_Study_3_Submission_Draft.md`
-- Clickable wireframe (Figma): [Proof of Talk Pitch Board v5](https://www.figma.com/online-whiteboard/create-diagram/f832226c-9b28-4c38-be43-8b4ada8f4d64?utm_source=other&utm_content=edit_in_figjam&oai_id=&request_id=55701c3a-ed32-408d-90b0-bb827b8e79fd)
-- Working app (live): [https://ai-matchmaking-pot.vercel.app](https://ai-matchmaking-pot.vercel.app)
-- Input dataset (12 fictional attendees): `/docs/level2/sample_input_12_attendees.json`
-- Output dataset (quality-gated matches): `/docs/level2/sample_output_matches.json`
-- Output dataset (pair/triad scenarios): `/docs/level2/sample_output_scenarios.json`
+This package includes **everything in Level 1**, plus the required Level 2 artifacts.
 
-## What the POC proves
-- Role-based auth and route scoping are implemented.
-- Audit logging exists for sensitive actions.
-- Hard constraints are enforced.
-- Soft scoring ranks strategic fit.
-- Quality gate is enforced (`score > 65`, target 3-7 when available).
-- Match explanations are generated.
-- Feedback changes future ranking.
-- Strategic pair/triad opportunities are surfaced.
-- Organizer can input new attendees from UI.
-- Organizer can bulk import attendee lists via CSV/JSON upload.
-- Organizer can delete attendees with explicit typed-name confirmation.
-- Organizer can export recommendations as CSV.
-- External source retrieval works through company website enrichment endpoint.
-  - Note: endpoint requires outbound network/DNS in runtime environment.
-- LinkedIn retrieval is implemented as explicit opt-in enrichment (checkbox + profile URL only, no hidden scraping).
-- Enterprise hardening controls (RBAC, CSRF, security headers, SSRF guard, audit logs) are implemented.
-- UI is production-polished with:
-  - Proof of Talk logo and favicon,
-  - premium but lightweight animations,
-  - responsive spacing fixes for card-heavy sections (more generous card padding + improved typography spacing),
-  - cross-device stability under window resize/orientation changes.
+## 1) Level 1 Included
+- Concept document (2-4 pages): `/docs/Case_Study_3_Submission_Draft.md`
 
-## Run
+## 2) Clickable Wireframe / UI Mockup
+- Figma wireframe: [Proof of Talk Pitch Board v5](https://www.figma.com/online-whiteboard/create-diagram/f832226c-9b28-4c38-be43-8b4ada8f4d64)
+
+## 3) Working Proof of Concept (Core Component)
+Core component implemented: **match recommendation engine with explanations**.
+
+### What works
+- Takes attendee profile data.
+- Applies hard constraints and soft scoring.
+- Returns quality-gated recommendations (`score > 65`, target 3-7).
+- Provides plain-English reasons per match.
+
+### Live app and endpoint
+- Live app: [https://ai-matchmaking-pot.vercel.app](https://ai-matchmaking-pot.vercel.app)
+- Core API: `GET /v1/matches/{attendee_id}`
+
+## 4) Sample Input / Output (10-15 Fictional Profiles)
+- Sample input (12 attendees): `/docs/level2/sample_input_12_attendees.json`
+- Sample output (matches): `/docs/level2/sample_output_matches.json`
+- Sample output (scenarios): `/docs/level2/sample_output_scenarios.json`
+
+## 5) Quick Run (Local)
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
@@ -44,23 +39,5 @@ python -m uvicorn app.main:app --reload
 
 Open:
 - App: `http://127.0.0.1:8000`
-- Organizer workspace: `http://127.0.0.1:8000/organizer`
-- Bulk import template: `http://127.0.0.1:8000/organizer/attendees/template.csv`
-- Matches API: `http://127.0.0.1:8000/v1/matches/1`
-- Scenarios API: `http://127.0.0.1:8000/v1/scenarios`
-- Enrichment API example: `POST /v1/enrich/company?attendee_id=1&source_url=https://example.com`
-- LinkedIn API example: `POST /v1/enrich/linkedin?attendee_id=1&source_url=https://www.linkedin.com/in/profile`
-- Favicon route: `http://127.0.0.1:8000/favicon.ico`
-
-Live deployment:
-- [https://ai-matchmaking-pot.vercel.app](https://ai-matchmaking-pot.vercel.app)
-
-## 5-minute demo flow
-1. Open attendee view and show quality-gated recommendations.
-2. Show explanation reasons on match cards.
-3. Show organizer strategic scenarios (pair and triad).
-4. Submit feedback and refresh ranking.
-5. Show organizer metrics.
-6. Upload a CSV/JSON batch in organizer workspace and verify created/failed summary.
-7. Delete a test attendee from organizer workspace and verify confirmation guardrails.
-8. Resize browser and show stable layout/spacing behavior in Curated Directory and Strategic Scenarios sections.
+- Organizer: `http://127.0.0.1:8000/organizer`
+- Match API example: `http://127.0.0.1:8000/v1/matches/1`

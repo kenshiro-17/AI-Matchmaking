@@ -1,269 +1,137 @@
-# AI-Powered Matchmaking Tool for Proof of Talk
+# Level 1 Concept: AI-Powered Matchmaking for Proof of Talk
 
-## A) Executive Summary
-Proof of Talk wins on conversation quality, not networking volume. In a curated room of senior decision-makers, weak introductions are expensive: they waste scarce meeting slots and reduce trust in the event experience. This proposal delivers a quality-first matchmaking system that recommends who to meet before and during the summit, with clear reasons people can trust. It combines hard constraints, strategic-fit scoring, and limited discovery to avoid echo chambers. It is consent-first: registration is required, enrichment is opt-in. It also surfaces non-obvious opportunities, including pair and triad pathways (for example, founder -> GP -> LP). Output is intentionally constrained to high-confidence results only (score > 65, target 3-7 recommendations when available). The MVP is realistic to ship in weeks and improves during the event through live feedback.
+## 1) System Architecture
+This system is built for one goal: **high-quality introductions for a curated audience**, not high-volume networking.
 
-## B) Problem Framing
-### Why matchmaking is uniquely hard at Proof of Talk
-- Attendees are senior and time-constrained.
-- Goals are asymmetric: fundraising, partnerships, regulation, hiring, learning.
-- Job titles do not reliably reflect current priorities.
-- Bad matches damage trust in a high-curation environment.
+### End-to-end flow
+1. **Data Collection Layer**
+- Mandatory data from registration: role, company, goals, availability, language, seek/offer text.
+- Optional enrichment: LinkedIn (opt-in only), company website, public content.
 
-### Why simple filtering fails
-- Keyword overlap creates generic matches.
-- Similarity-only logic misses complementary value.
-- Static directories cannot adapt to in-event context changes.
+2. **Profile Builder**
+- Converts raw inputs into a structured profile:
+  - `expertise`
+  - `current_focus`
+  - `what_they_seek`
+  - `what_they_offer`
+  - `constraints` (language, availability, exclusions)
+- Adds confidence tags per field (high/medium/low).
 
-### What success means
-- Fewer, higher-confidence introductions.
-- Higher “useful meeting” and “follow-up planned” rates.
-- Better organizer outcomes: curated tables, stronger intros, measurable business progress.
+3. **Matching Engine**
+- Step 1: hard constraint filter.
+- Step 2: soft scoring for strategic fit.
+- Step 3: limited discovery injection (controlled exploration).
+- Step 4: quality gate (`score > 65`, target 3-7 matches).
 
-## C) Users & Personas
-### 1) Institutional Investor (Partner/MD)
-- Goals: differentiated deal flow, thesis validation.
-- Constraints: very limited slots, low tolerance for generic outreach.
-- Good match: founder/executive with clear fit, credibility, and timing.
+4. **Explanation + Output Layer**
+- Produces plain-English “why this match” reasons.
+- Shows only quality-gated recommendations.
 
-### 2) Founder/CEO
-- Goals: capital, strategic distribution, enterprise partnerships.
-- Constraints: high opportunity cost per meeting.
-- Good match: decision-maker with direct relevance and a realistic next step.
-
-### 3) Bank / Institutional Innovation Executive
-- Goals: compliant digital-asset adoption and partner selection.
-- Constraints: regulatory and reputational risk.
-- Good match: enterprise-ready team with strong compliance posture.
-
-### 4) Infrastructure / Protocol CTO
-- Goals: technical partnerships, design partners, selective hiring.
-- Constraints: avoids low-depth, non-technical meetings.
-- Good match: counterpart with architecture-level complementarity.
-
-## D) Data Strategy
-### Sources, value, and risk
-1. Registration form (mandatory)
-- Value: structured baseline and explicit intent.
-- Risk: often shallow.
-
-2. LinkedIn (optional opt-in)
-- Value: expertise and trajectory context.
-- Risk: privacy sensitivity; stale fields.
-
-3. Company website (optional)
-- Value: company strategy and positioning.
-- Risk: marketing bias.
-
-4. Public content (optional)
-- Value: current thinking and active themes.
-- Risk: uneven availability.
-
-5. Past Proof of Talk data (if available)
-- Value: strongest context signal for quality.
-- Risk: can reinforce old network patterns.
-
-### Mandatory vs optional
-- Mandatory: profile basics, goal, availability, exclusions.
-- Optional: LinkedIn, website, public content.
-
-### Consent and noisy data handling
-- Source-level opt-in.
-- Plain-language data use disclosure.
-- Attendee controls for edits/exclusions.
-- Confidence labels for inferred fields.
-- Conservative ranking for low-confidence profiles.
-
-### Cold-start strategy
-- 2-minute intent form (seek, offer, constraints).
-- Rules-first matching plus organizer curation fallback.
-
-## E) Profile Building Logic
-Each attendee is represented by four blocks:
-- Identity context (role, authority, language, sector)
-- Current focus (what they are actively doing now)
-- Seeks (what they want from this event)
-- Offers (what value they can provide)
-
-Text signals are interpreted semantically, but structured fields remain the control layer.
-
-Conflict policy:
-- Explicit attendee input overrides inferred signals.
-- Newer signals outrank older ones.
-- Low-confidence inferences are down-weighted.
-
-## F) Matching Logic (Core)
-### 1) Hard constraints
-- Language compatibility
-- Availability overlap
-- Exclusions and organizer policy rules
-
-### 2) Soft scoring
-- Objective relevance
-- Complementarity (investor-founder, bank-infra, policy-operator)
-- Decision-level fit
-- Asymmetric value exchange
-- Feedback prior from observed outcomes
-
-### 3) Exploration / diversity injection
-- One limited discovery slot for adjacent high-upside opportunities.
-- Discovery still must pass quality threshold.
-
-### 4) Explainability
-Each recommendation includes clear reasons, e.g.:
-- “Your investment objective aligns with this founder’s active fundraising and institutional traction.”
-- “You both have overlapping availability and compatible strategic priorities.”
-
-### 5) Strategic scenario engine (non-obvious opportunities)
-- Pair: Kenji’s compliance-focused L2 -> Elena’s bank deployment need.
-- Triad: Marcus (founder) -> Aisha (GP) -> Sarah (LP context bridge).
-
-## G) Output & UX Design
-### Before event (web-first)
-- Show only high-confidence recommendations (`score > 65`).
-- Target 3-7 recommendations when enough qualify.
-- Match cards include reasons and actions: Request Intro / Save / Not Relevant.
-
-### During event
-- Time-aware nudges based on free windows.
-- Concierge escalation on mutual accept.
-
-### After event
-- Outcome capture: met, follow-up planned, declined.
-- Feedback updates future ranking.
-
-Example copy:
-“Recommended: Elena Rossi (European Bank). Why: your objective is institutional allocation, and Elena is launching compliant custody while seeking tokenization partners. Shared availability: Day 1 PM.”
-
-## H) Learning & Feedback Loop
-- Explicit: rating, outcome, comment.
-- Implicit: accept/decline, meeting completion, follow-up behavior.
-- Re-rank during event without heavyweight retraining.
-- Repeated weak outcomes are penalized or removed.
-
-## I) System Design (Logical, Not Over-Engineered)
-### Core components
-- Data ingestion
-- Profile builder
-- Matching service
-- Explanation layer
-- Scenario engine (pair/triad)
-- Notification layer
-- Organizer dashboard
-
-### High-level schema
-- `attendees`
-- `matches`
-- `feedback`
-- `signals` (optional enrichment traces)
-
-### APIs
-- `GET /v1/matches/{attendee_id}`
-- `POST /v1/feedback`
-- `GET /v1/organizer/metrics`
-- `GET /v1/scenarios`
+5. **Organizer Console**
+- Add/import attendees.
+- Review/export matches.
+- Surface non-obvious pair/triad opportunities for concierge intros.
 
 ```text
-[Ingestion] -> [Profile Builder] -> [Matching + Scenario Engine] -> [Explanations]
-                                             |                         |
-                                             v                         v
-                                       [Organizer Tools]         [Attendee UI]
+[Data Collection] -> [Profile Builder] -> [Matching Engine] -> [Explanation Layer] -> [Attendee/Organizer Output]
 ```
 
-## J) Organizer Perspective
-Organizers can use this system to:
-- prioritize concierge introductions,
-- design better seating and roundtables,
-- detect high-value attendees with weak coverage,
-- act on pair/triad scenario opportunities.
+## 2) Data Strategy
+### Source priority
+1. **Registration form (mandatory)**
+- Most reliable consented baseline.
+- Weakness: often shallow.
 
-This strengthens Proof of Talk’s perceived and measurable event value.
+2. **LinkedIn (optional opt-in)**
+- Strong context for role history and domain depth.
+- Risk: privacy sensitivity and stale profiles.
 
-## K) Risks, Ethics & Privacy
-- Consent-first enrichment; no hidden scraping.
-- Transparent “why this match” explanations.
-- Anti-spam controls and moderation paths.
-- Bias control through exploration and organizer oversight.
-- Deliberate non-automation: final intro approval remains human.
+3. **Company website (optional)**
+- Useful for current product and positioning signals.
+- Risk: marketing bias.
 
-## L) MVP Scope & Roadmap
-### Level 1 (concept)
-- End-to-end design, data strategy, matching logic, UX flow, risks, and roadmap.
+4. **Public content (optional)**
+- Useful for current thinking (talks/articles/podcasts).
+- Risk: coverage is inconsistent across attendees.
 
-### Level 2 (delivered)
-- Clickable wireframe.
-- Working POC with 12 fictional attendees.
-- Generated sample input/output, including strategic scenarios.
-- Working web app with attendee workflow + organizer workspace.
-- Organizer attendee input form, bulk CSV/JSON import, and CSV export for match recommendations.
-- Organizer attendee deletion flow with explicit typed-name confirmation.
-- External data retrieval from one source (company website enrichment endpoint).
-- Explicit LinkedIn opt-in enrichment flow (checkbox + profile URL; no hidden scraping).
-- Production-grade presentation layer improvements:
-  - Proof of Talk branding integration (local static logo),
-  - browser favicon support,
-  - premium UI interactions with lightweight motion,
-  - responsive spacing stabilization across mobile/tablet/laptop/desktop/large monitor viewports.
+5. **Past Proof of Talk outcomes (optional)**
+- Useful for long-term quality learning.
+- Risk: can reinforce network echo chambers.
 
-### 90-day roadmap
-1. Days 1-30: ingestion, profile builder, hard constraints, quality-gated recommendations.
-2. Days 31-60: scoring refinement, explanation quality, feedback loop, organizer metrics.
-3. Days 61-90: in-event nudges, scenario tuning, stronger organizer curation workflows.
+### Handling messy, incomplete, and private data
+- **Consent-first**: no hidden scraping.
+- **Field confidence**: inferred fields are tagged and down-weighted.
+- **Fallback logic**: if enrichment is missing, system still runs on mandatory fields.
+- **Conflict resolution**: explicit attendee input overrides inferred data.
+- **Cold start policy**: useful matches are still possible from a minimal profile (goal + seek + offer + availability).
 
-## Technical Stack
-- Web-first UI
-- FastAPI backend
-- SQLite for MVP (Postgres in production)
-- Rule-based scoring + semantic text interpretation + feedback priors
-- HTTP enrichment adapter for external source retrieval (company website metadata/content summary)
-- Security and runtime hardening:
-  - RBAC, CSRF, lockout/rate limiting, audit logs, SSRF controls, secure headers.
+## 3) Matching Logic
+### How the system decides who should meet
+1. **Hard constraints (must pass)**
+- Language compatibility.
+- Schedule overlap.
+- Explicit exclusions / policy constraints.
 
-## Why this differs from Grip / Brella / Swapcard
-- Strict quality gating, not high-volume networking.
-- Complementary and strategic-chain logic, not tag similarity only.
-- Explainability and organizer-in-the-loop controls as core features.
+2. **Soft scoring (rank candidates)**
+- Goal relevance (investment, partnerships, hiring, regulation, learning).
+- Strategic fit (decision-making level and domain overlap).
+- Value exchange clarity (what one seeks vs what the other offers).
+- Feedback prior (past outcomes improve ranking confidence).
 
-## How This Scores Against Evaluation Criteria
-- Problem Understanding: high-stakes framing, edge cases, quality KPIs.
-- System Design: practical architecture, consent model, organizer controls.
-- AI & Matching Logic: constraints + scoring + explainability + scenarios.
-- Communication: concise, executive-readable, concrete examples.
-- Ambition & Execution: Level 1 + Level 2 artifacts + runnable prototype with authenticated organizer tooling, CSV export, external source enrichment, and cross-device UI reliability improvements.
+### Similar vs complementary
+- **Default: complementary first** for business outcomes
+  - investor <-> founder
+  - bank executive <-> compliance/infrastructure CTO
+  - policy leader <-> operator deploying in regulated markets
+- **Limited similar matching** for peer calibration (for example, investor-to-investor only when clearly useful).
 
-## “Things to Think About” — Direct Answers
-1. Cold start: require mini-intent form, rank conservatively, use organizer fallback.
-2. Similar vs complementary: prioritize complementary; keep one controlled peer-similarity slot.
-3. Quality vs quantity: enforce `score > 65`, target 3-7 recommendations.
-4. Privacy/consent: source-level opt-in, transparent use, attendee edit controls.
-5. Organizer value: seating, roundtables, concierge intros, coverage monitoring.
-6. Feedback loops: explicit + implicit signals drive reranking.
-7. Existing tools: differentiate through quality gating, explainability, and triad scenarios.
+### Quality policy
+- Show only matches with `score > 65`.
+- Return **3-7** recommendations when enough pass threshold.
+- If fewer qualify, show fewer and flag organizer curation support.
 
-## Level 2 Package
-- Wireframe: `/docs/level2/wireframe-clickable.html`
-- POC note: `/docs/level2/Proof_of_Concept.md`
-- Input: `/docs/level2/sample_input_12_attendees.json`
-- Match output: `/docs/level2/sample_output_matches.json`
-- Scenario output: `/docs/level2/sample_output_scenarios.json`
-- Working app endpoints include:
+## 4) Output Design
+### What an attendee sees
+- A compact shortlist (3-7 high-confidence matches).
+- Each match card includes:
+  - Name, role, company
+  - Match score
+  - 2-3 plain-English reasons
+  - Suggested next action (“Request Intro”, “Save”, “Not Relevant”)
+
+### Before / during / after event
+- **Before**: personalized shortlist with reasons and schedule fit.
+- **During**: nudges for open time windows and accepted intro requests.
+- **After**: simple feedback capture (met / not met / follow-up planned).
+
+### Example match card (mock)
+- **Elena Rossi — Head of Digital Assets, European Bank**
+- **Score:** 81
+- **Why this match:**
+  - Your focus is institutional tokenization; Elena is actively evaluating compliant custody partners.
+  - Your goals are complementary (partnership + deployment).
+  - You both have Day 1 PM availability.
+- **Action:** Request Intro
+
+## 5) Technical Stack
+### Proposed MVP stack (buildable in weeks)
+- **Backend:** FastAPI (Python) for rapid API delivery and maintainability.
+- **Data layer:** SQLAlchemy + SQLite for demo, Postgres for production.
+- **Web UI:** Server-rendered templates for fast iteration and low complexity.
+- **Matching service:** rule-based + lightweight semantic text interpretation.
+- **Enrichment adapters:**
+  - company website fetcher,
+  - LinkedIn ingestion only when user opts in.
+
+### Key APIs
 - `GET /v1/matches/{attendee_id}`
+- `POST /v1/feedback`
+- `GET /v1/scenarios`
 - `POST /v1/enrich/company`
 - `POST /v1/enrich/linkedin`
-- `GET /organizer/export/matches.csv`
-- `POST /organizer/attendees/import`
-- `GET /organizer/attendees/template.csv`
-- `GET /v1/scenarios`
-- `GET /favicon.ico` (brand icon support)
 
-## Submission Email Paragraph
-I am submitting my case study for an AI-powered matchmaking tool for Proof of Talk. The proposal is quality-first and implementation-focused: consented profile enrichment, explainable matching, strict confidence gating, and feedback-driven adaptation. I also included a Level-2 wireframe and working proof of concept with sample outputs, including non-obvious pair and triad strategic opportunities.
-
-## Evaluation Checklist
-| Criteria | Coverage |
-|---|---|
-| Problem Understanding (30%) | High-stakes framing, edge cases, quality KPIs |
-| System Design (25%) | Practical architecture, consent model, organizer controls |
-| AI & Matching Logic (25%) | Hard constraints, soft scoring, explainability, scenarios |
-| Communication (10%) | Concise, structured, executive-readable narrative |
-| Ambition & Execution (10%) | Level 1 + Level 2 artifacts + runnable prototype |
+### Why these choices
+- **Speed:** practical MVP in weeks, not months.
+- **Control:** transparent logic + explainability for high-trust users.
+- **Scalability:** suitable for ~2,500 attendees with pagination, batching, and thresholded outputs.
+- **Safety:** RBAC, CSRF, audit logs, consent controls, and SSRF protections already align with production expectations.

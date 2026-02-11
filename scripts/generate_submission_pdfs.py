@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape, quoteattr
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -39,39 +39,39 @@ def _styles():
         ParagraphStyle(
             name="H1X",
             parent=styles["Heading1"],
-            fontSize=16,
-            leading=20,
-            spaceAfter=8,
+            fontSize=14,
+            leading=17,
+            spaceAfter=4,
         )
     )
     styles.add(
         ParagraphStyle(
             name="H2X",
             parent=styles["Heading2"],
-            fontSize=12,
-            leading=16,
-            spaceBefore=8,
-            spaceAfter=4,
+            fontSize=10.5,
+            leading=13,
+            spaceBefore=4,
+            spaceAfter=2,
         )
     )
     styles.add(
         ParagraphStyle(
             name="BodyX",
             parent=styles["BodyText"],
-            fontSize=10,
-            leading=14,
-            spaceAfter=3,
+            fontSize=9.3,
+            leading=11.5,
+            spaceAfter=1.2,
         )
     )
     styles.add(
         ParagraphStyle(
             name="BulletX",
             parent=styles["BodyText"],
-            fontSize=10,
-            leading=14,
+            fontSize=9.3,
+            leading=11.5,
             leftIndent=14,
             bulletIndent=4,
-            spaceAfter=2,
+            spaceAfter=0.8,
         )
     )
     styles.add(
@@ -79,10 +79,10 @@ def _styles():
             name="CodeX",
             parent=styles["BodyText"],
             fontName="Courier",
-            fontSize=9,
-            leading=12,
+            fontSize=8.8,
+            leading=10.8,
             leftIndent=10,
-            spaceAfter=2,
+            spaceAfter=0.8,
         )
     )
     return styles
@@ -90,8 +90,18 @@ def _styles():
 
 def _normalize_inline(text: str) -> str:
     text = text.replace("`", "")
-    text = LINK_PATTERN.sub(lambda m: f"{m.group(1)} ({m.group(2)})", text)
-    return escape(text)
+    chunks = []
+    cursor = 0
+    for match in LINK_PATTERN.finditer(text):
+        if match.start() > cursor:
+            chunks.append(escape(text[cursor:match.start()]))
+        label = escape(match.group(1))
+        href = quoteattr(match.group(2).strip())
+        chunks.append(f"<link href={href}>{label}</link>")
+        cursor = match.end()
+    if cursor < len(text):
+        chunks.append(escape(text[cursor:]))
+    return "".join(chunks)
 
 
 def render_markdown_to_pdf(source: Path, target: Path, title: str):
@@ -108,11 +118,11 @@ def render_markdown_to_pdf(source: Path, target: Path, title: str):
             if line.strip():
                 story.append(Paragraph(escape(line), styles["CodeX"]))
             else:
-                story.append(Spacer(1, 4))
+                story.append(Spacer(1, 2))
             continue
 
         if not line.strip():
-            story.append(Spacer(1, 5))
+            story.append(Spacer(1, 2))
             continue
         if line.startswith("# "):
             story.append(Paragraph(_normalize_inline(line[2:].strip()), styles["H1X"]))
@@ -138,10 +148,10 @@ def render_markdown_to_pdf(source: Path, target: Path, title: str):
     doc = SimpleDocTemplate(
         str(target),
         pagesize=A4,
-        leftMargin=1.6 * cm,
-        rightMargin=1.6 * cm,
-        topMargin=1.5 * cm,
-        bottomMargin=1.5 * cm,
+        leftMargin=1.25 * cm,
+        rightMargin=1.25 * cm,
+        topMargin=1.1 * cm,
+        bottomMargin=1.1 * cm,
         title=title,
     )
     doc.build(story)

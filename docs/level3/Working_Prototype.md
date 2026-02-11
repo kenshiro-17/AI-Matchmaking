@@ -78,4 +78,4 @@ Current deployed URL:
 - [https://ai-matchmaking-pot.vercel.app](https://ai-matchmaking-pot.vercel.app)
 
 Primary wireframe (Figma):
-- [Proof of Talk Pitch Board](https://www.figma.com/online-whiteboard/create-diagram/f832226c-9b28-4c38-be43-8b4ada8f4d64?utm_source=other&utm_content=edit_in_figjam&oai_id=&request_id=55701c3a-ed32-408d-90b0-bb827b8e79fd)
+- [Proof of Talk Pitch Board](https://www.figma.com/online-whiteboard/create-diagram/f832226c-9b28-4c38-be43-8b4ada8f4d64)
