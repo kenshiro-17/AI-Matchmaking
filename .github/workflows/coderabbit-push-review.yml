@@ -1,0 +1,53 @@
+name: CodeRabbit Push Review
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  coderabbit-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install CodeRabbit CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://cli.coderabbit.ai/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Run CodeRabbit review on pushed changes
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          CODERABBIT_API_KEY: ${{ secrets.CODERABBIT_API_KEY }}
+          CODERABBIT_TOKEN: ${{ secrets.CODERABBIT_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          ZERO_SHA="0000000000000000000000000000000000000000"
+          if [ "$BEFORE_SHA" = "$ZERO_SHA" ]; then
+            BASE_ARGS="--base main"
+          else
+            BASE_ARGS="--base-commit $BEFORE_SHA"
+          fi
+
+          echo "Using base args: $BASE_ARGS" | tee coderabbit-review.txt
+          coderabbit --plain $BASE_ARGS | tee -a coderabbit-review.txt || true
+
+      - name: Upload CodeRabbit output
+        uses: actions/upload-artifact@v4
+        with:
+          name: coderabbit-push-review
+          path: coderabbit-review.txt
+          if-no-files-found: error
