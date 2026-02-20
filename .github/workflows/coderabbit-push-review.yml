@@ -40,7 +40,7 @@ jobs:
           FULL_REPO: ${{ github.event.inputs.full_repo }}
           HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           CODERABBIT_API_KEY: ${{ secrets.CODERABBIT_API_KEY }}
-          CODERABBIT_TOKEN: ${{ secrets.CODERABBIT_TOKEN }}
+          CODERABBIT_TOKEN: ${{ secrets.CODERABBIT_TOKEN || secrets.CODERABBIT_API_KEY }}
         run: |
           set -euo pipefail
 
