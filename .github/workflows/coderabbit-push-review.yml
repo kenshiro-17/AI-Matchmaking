@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      full_repo:
+        description: "Run broad full-repo scan mode"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -26,23 +33,33 @@ jobs:
           curl -fsSL https://cli.coderabbit.ai/install.sh | sh
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Run CodeRabbit review on pushed changes
+      - name: Run CodeRabbit review
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          FULL_REPO: ${{ github.event.inputs.full_repo }}
           CODERABBIT_API_KEY: ${{ secrets.CODERABBIT_API_KEY }}
           CODERABBIT_TOKEN: ${{ secrets.CODERABBIT_TOKEN }}
         run: |
           set -euo pipefail
 
+          EVENT_NAME="${{ github.event_name }}"
           ZERO_SHA="0000000000000000000000000000000000000000"
-          if [ "$BEFORE_SHA" = "$ZERO_SHA" ]; then
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ "${FULL_REPO:-false}" = "true" ]; then
+            ROOT_COMMIT="$(git rev-list --max-parents=0 HEAD | tail -n 1)"
+            BASE_ARGS="--base-commit $ROOT_COMMIT"
+            MODE_LABEL="full_repo"
+          elif [ "$BEFORE_SHA" = "$ZERO_SHA" ] || [ -z "${BEFORE_SHA:-}" ]; then
             BASE_ARGS="--base main"
+            MODE_LABEL="push_base_main"
           else
             BASE_ARGS="--base-commit $BEFORE_SHA"
+            MODE_LABEL="push_base_before_sha"
           fi
 
-          echo "Using base args: $BASE_ARGS" | tee coderabbit-review.txt
+          echo "Mode: $MODE_LABEL" | tee coderabbit-review.txt
+          echo "Using base args: $BASE_ARGS" | tee -a coderabbit-review.txt
           coderabbit --plain $BASE_ARGS | tee -a coderabbit-review.txt || true
 
       - name: Upload CodeRabbit output
