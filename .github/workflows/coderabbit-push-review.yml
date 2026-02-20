@@ -38,6 +38,7 @@ jobs:
         env:
           BEFORE_SHA: ${{ github.event.before }}
           FULL_REPO: ${{ github.event.inputs.full_repo }}
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           CODERABBIT_API_KEY: ${{ secrets.CODERABBIT_API_KEY }}
           CODERABBIT_TOKEN: ${{ secrets.CODERABBIT_TOKEN }}
         run: |
@@ -45,11 +46,16 @@ jobs:
 
           EVENT_NAME="${{ github.event_name }}"
           ZERO_SHA="0000000000000000000000000000000000000000"
+          COMMIT_MSG="${HEAD_COMMIT_MESSAGE:-}"
 
           if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ "${FULL_REPO:-false}" = "true" ]; then
             ROOT_COMMIT="$(git rev-list --max-parents=0 HEAD | tail -n 1)"
             BASE_ARGS="--base-commit $ROOT_COMMIT"
             MODE_LABEL="full_repo"
+          elif [ "$EVENT_NAME" = "push" ] && echo "$COMMIT_MSG" | grep -q "\[full-repo\]"; then
+            ROOT_COMMIT="$(git rev-list --max-parents=0 HEAD | tail -n 1)"
+            BASE_ARGS="--base-commit $ROOT_COMMIT"
+            MODE_LABEL="push_full_repo_token"
           elif [ "$BEFORE_SHA" = "$ZERO_SHA" ] || [ -z "${BEFORE_SHA:-}" ]; then
             BASE_ARGS="--base main"
             MODE_LABEL="push_base_main"
